@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工厂督查数据看板（可交互）· 1-6月</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; background:#eef1f6; color:#222; }
+  .wrap { max-width:1280px; margin:0 auto; padding:20px; }
+
+  .banner { background:linear-gradient(135deg,#1a3a6b,#2b5aa7); color:#fff;
+            border-radius:12px; padding:26px 30px; margin-bottom:18px; }
+  .banner h1 { font-size:26px; font-weight:700; letter-spacing:1px; }
+  .banner .sub { margin-top:6px; font-size:13px; opacity:.85; }
+
+  .controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+              background:#fff; border-radius:12px; padding:14px 20px;
+              box-shadow:0 1px 4px rgba(0,0,0,.08); margin-bottom:18px; }
+  .controls label { font-size:13px; color:#666; }
+  .controls select, .controls input {
+      padding:7px 12px; border:1px solid #ccd6e3; border-radius:8px;
+      font-size:13px; outline:none; background:#fff; }
+  .controls input { width:220px; }
+  .controls select:focus, .controls input:focus { border-color:#2b5aa7; }
+  .controls .count { margin-left:auto; font-size:13px; color:#888; }
+  .btn-reset { padding:7px 16px; border:1px solid #ccd6e3; border-radius:8px;
+               background:#f5f7fa; font-size:13px; cursor:pointer; color:#555; }
+  .btn-reset:hover { background:#e8edf4; }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+           gap:14px; margin-bottom:18px; }
+  .card { background:#fff; border-radius:12px; padding:16px 20px;
+          box-shadow:0 1px 4px rgba(0,0,0,.08); }
+  .card .label { font-size:13px; color:#888; }
+  .card .value { font-size:28px; font-weight:700; margin-top:6px; }
+  .card .detail { font-size:12px; color:#999; margin-top:4px; }
+  .v-red { color:#e0483f; } .v-green { color:#1e9e63; } .v-blue { color:#2b5aa7; }
+
+  .panel { background:#fff; border-radius:12px; padding:20px 24px;
+           box-shadow:0 1px 4px rgba(0,0,0,.08); margin-bottom:18px; }
+  .panel h2 { font-size:16px; font-weight:700; margin-bottom:16px; color:#1a3a6b;
+              border-left:4px solid #2b5aa7; padding-left:10px; }
+  .panel h2 .hint { font-size:12px; color:#999; font-weight:400; margin-left:8px; }
+
+  .struct { display:flex; gap:30px; align-items:center; flex-wrap:wrap; }
+  .donut-box { width:210px; height:210px; position:relative; flex:0 0 auto; }
+  .donut-center { position:absolute; inset:0; display:flex; flex-direction:column;
+                  align-items:center; justify-content:center; pointer-events:none; }
+  .donut-center .big { font-size:32px; font-weight:700; color:#1e9e63; }
+  .donut-center .cap { font-size:12px; color:#888; }
+  .bars { flex:1; min-width:280px; display:flex; flex-direction:column; gap:11px; }
+  .bar-row { display:flex; align-items:center; gap:10px; cursor:pointer;
+             padding:3px 6px; border-radius:8px; }
+  .bar-row:hover { background:#f2f6fc; }
+  .bar-row.active { background:#e7effc; }
+  .bar-row .name { width:130px; font-size:13px; color:#555; text-align:right; }
+  .bar-track { flex:1; height:16px; background:#eef1f6; border-radius:8px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:8px; }
+  .bar-row .pct { width:100px; font-size:12px; color:#666; }
+
+  .charts2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:900px){ .charts2{ grid-template-columns:1fr; } }
+  .chart-box { position:relative; height:340px; }
+
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th, td { padding:7px 8px; text-align:center; border-bottom:1px solid #eee; }
+  th { background:#1a3a6b; color:#fff; position:sticky; top:0; font-weight:600;
+       cursor:pointer; user-select:none; white-space:nowrap; }
+  th .arr { font-size:10px; opacity:.7; margin-left:3px; }
+  tbody tr { cursor:pointer; }
+  tbody tr:nth-child(even){ background:#f8f9fb; }
+  tbody tr:hover { background:#eaf1fb; }
+  td.left { text-align:left; }
+  .rate-good { color:#1e9e63; font-weight:600; }
+  .rate-mid { color:#e8973a; font-weight:600; }
+  .rate-bad { color:#e0483f; font-weight:600; }
+  .table-scroll { max-height:520px; overflow:auto; border-radius:8px; }
+  .footer { text-align:center; font-size:12px; color:#999; padding:10px 0 30px; }
+
+  /* modal */
+  .modal-mask { position:fixed; inset:0; background:rgba(15,25,45,.55);
+                display:none; align-items:center; justify-content:center; z-index:99; }
+  .modal-mask.show { display:flex; }
+  .modal { background:#fff; border-radius:14px; width:min(680px,92vw);
+           max-height:88vh; overflow:auto; padding:26px 30px; position:relative; }
+  .modal .close { position:absolute; top:14px; right:18px; font-size:22px;
+                  cursor:pointer; color:#999; line-height:1; }
+  .modal .close:hover { color:#e0483f; }
+  .modal h3 { font-size:19px; color:#1a3a6b; margin-bottom:4px; }
+  .modal .msub { font-size:12.5px; color:#888; margin-bottom:16px; }
+  .mgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+           gap:10px; margin-bottom:18px; }
+  .mitem { background:#f6f8fb; border-radius:10px; padding:10px 14px; }
+  .mitem .k { font-size:12px; color:#888; }
+  .mitem .v { font-size:19px; font-weight:700; margin-top:3px; }
+  .modal .mchart-box { position:relative; height:220px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="banner">
+    <h1>工厂督查数据看板 · 可交互版</h1>
+    <div class="sub">华东区&amp;东北区 · 统计周期 2026年1-6月 · 区域筛选 / 搜索 / 点行看详情 / 点表头排序</div>
+  </div>
+
+  <div class="controls">
+    <label>区域</label>
+    <select id="regionSel"></select>
+    <label>搜索</label>
+    <input id="searchBox" type="text" placeholder="输入工厂 / 经理名称…">
+    <button class="btn-reset" id="resetBtn">重置</button>
+    <span class="count" id="countLabel"></span>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="panel">
+    <h2>整体完成结构<span class="hint">点击右侧区域条可筛选</span></h2>
+    <div class="struct">
+      <div class="donut-box">
+        <canvas id="donut"></canvas>
+        <div class="donut-center"><div class="big" id="donutBig"></div><div class="cap">完成率</div></div>
+      </div>
+      <div class="bars" id="regionBars"></div>
+    </div>
+  </div>
+
+  <div class="charts2">
+    <div class="panel">
+      <h2>各工厂完成率对比（%）<span class="hint">随筛选联动</span></h2>
+      <div class="chart-box"><canvas id="factoryChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>1-6月检查频次趋势<span class="hint">随筛选联动</span></h2>
+      <div class="chart-box"><canvas id="monthChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>工厂明细<span class="hint">点击表头排序 · 点击行查看详情</span></h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr id="thead"></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">单文件可交互 HTML 看板 · 数据已内嵌，打开即用，不消耗任何积分</div>
+</div>
+
+<!-- detail modal -->
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <span class="close" id="modalClose">&times;</span>
+    <h3 id="mTitle"></h3>
+    <div class="msub" id="mSub"></div>
+    <div class="mgrid" id="mGrid"></div>
+    <div class="mchart-box"><canvas id="mChart"></canvas></div>
+  </div>
+</div>
+
+<script>
+const DATA = {"records": [{"region": "东部", "manager": "张禹", "factory": "上海企业群", "need": 8, "have": 4, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [0, 1, 0, 0, 2, 2]}, {"region": "东部", "manager": "张禹", "factory": "兖州&济宁粮油", "need": 4, "have": 1, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 1, 1]}, {"region": "东部", "manager": "张禹", "factory": "合肥粮油", "need": 20, "have": 4, "targetMkts": 4, "coveredMkts": 4, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 1, "extraFreq": 0, "months": [1, 0, 1, 1, 2, 2]}, {"region": "东部", "manager": "张禹", "factory": "启东粮油", "need": 0, "have": 0, "targetMkts": 0, "coveredMkts": 0, "coverRate": 0.0, "stdReports": 0, "doneFreq": 0, "doneRate": 0.0, "extraMkts": 0, "extraFreq": 0, "months": [0, 0, 0, 0, 0, 0]}, {"region": "东部", "manager": "张禹", "factory": "周口粮油", "need": 10, "have": 4, "targetMkts": 3, "coveredMkts": 2, "coverRate": 0.6667, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 0, 1]}, {"region": "东部", "manager": "张禹", "factory": "安阳食品", "need": 4, "have": 1, "targetMkts": 3, "coveredMkts": 2, "coverRate": 0.6667, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [0, 1, 0, 1, 1, 0]}, {"region": "东部", "manager": "张禹", "factory": "开封食品", "need": 10, "have": 3, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 0, 2, 0, 1]}, {"region": "东部", "manager": "张禹", "factory": "德州粮油", "need": 6, "have": 2, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [0, 0, 1, 0, 0, 3]}, {"region": "东部", "manager": "张禹", "factory": "昆山食品", "need": 9, "have": 1, "targetMkts": 5, "coveredMkts": 3, "coverRate": 0.6, "stdReports": 12, "doneFreq": 3, "doneRate": 0.25, "extraMkts": 0, "extraFreq": 0, "months": [2, 2, 2, 1, 1, 1]}, {"region": "东部", "manager": "张禹", "factory": "武汉粮油", "need": 10, "have": 4, "targetMkts": 5, "coveredMkts": 4, "coverRate": 0.8, "stdReports": 12, "doneFreq": 4, "doneRate": 0.3333, "extraMkts": 0, "extraFreq": 0, "months": [0, 0, 2, 1, 0, 2]}, {"region": "东部", "manager": "张禹", "factory": "泰安油脂", "need": 4, "have": 1, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 0, 0, 1, 1, 1]}, {"region": "东部", "manager": "张禹", "factory": "泰州粮油", "need": 6, "have": 3, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 3, "extraFreq": 0, "months": [1, 1, 3, 1, 3, 3]}, {"region": "东部", "manager": "张禹", "factory": "浙江食品", "need": 10, "have": 2, "targetMkts": 6, "coveredMkts": 5, "coverRate": 0.8333, "stdReports": 14, "doneFreq": 6, "doneRate": 0.4286, "extraMkts": 0, "extraFreq": 0, "months": [2, 2, 1, 2, 2, 2]}, {"region": "东部", "manager": "张禹", "factory": "淮安粮油", "need": 12, "have": 3, "targetMkts": 3, "coveredMkts": 1, "coverRate": 0.3333, "stdReports": 8, "doneFreq": 1, "doneRate": 0.125, "extraMkts": 0, "extraFreq": 0, "months": [0, 0, 0, 0, 0, 1]}, {"region": "东部", "manager": "张禹", "factory": "温州粮油", "need": 24, "have": 6, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 1, "extraFreq": 0, "months": [1, 1, 0, 0, 1, 3]}, {"region": "东部", "manager": "张禹", "factory": "烟台粮油", "need": 4, "have": 1, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [0, 0, 1, 0, 1, 1]}, {"region": "东部", "manager": "张禹", "factory": "盐城粮油", "need": 12, "have": 3, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [0, 1, 0, 0, 1, 2]}, {"region": "东部", "manager": "张禹", "factory": "芜湖粮油", "need": 12, "have": 3, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [1, 0, 1, 1, 1, 1]}, {"region": "东部", "manager": "张禹", "factory": "荆州粮油", "need": 3, "have": 1, "targetMkts": 2, "coveredMkts": 2, "coverRate": 1.0, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [1, 0, 0, 1, 0, 1]}, {"region": "东部", "manager": "张禹", "factory": "连云港粮油", "need": 6, "have": 2, "targetMkts": 2, "coveredMkts": 2, "coverRate": 1.0, "stdReports": 6, "doneFreq": 3, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [0, 1, 1, 1, 1, 1]}, {"region": "东部", "manager": "张禹", "factory": "郑州食品", "need": 11, "have": 2, "targetMkts": 5, "coveredMkts": 4, "coverRate": 0.8, "stdReports": 12, "doneFreq": 5, "doneRate": 0.4167, "extraMkts": 0, "extraFreq": 0, "months": [1, 2, 3, 2, 0, 1]}, {"region": "东部", "manager": "张禹", "factory": "青岛粮油", "need": 5, "have": 2, "targetMkts": 3, "coveredMkts": 2, "coverRate": 0.6667, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 1, "extraFreq": 0, "months": [2, 0, 2, 0, 0, 2]}, {"region": "北部", "manager": "于立刚", "factory": "佳木斯粮油", "need": 2, "have": 1, "targetMkts": 1, "coveredMkts": 1, "coverRate": 1.0, "stdReports": 4, "doneFreq": 2, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 0, 0, 1]}, {"region": "北部", "manager": "于立刚", "factory": "北京粮油", "need": 13, "have": 5, "targetMkts": 3, "coveredMkts": 2, "coverRate": 0.6667, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [1, 0, 0, 0, 0, 2]}, {"region": "北部", "manager": "于立刚", "factory": "吉林粮油", "need": 4, "have": 1, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 1, 1]}, {"region": "北部", "manager": "于立刚", "factory": "哈尔滨粮油", "need": 10, "have": 2, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 0, 1, 1]}, {"region": "北部", "manager": "于立刚", "factory": "天津粮油&食品", "need": 4, "have": 2, "targetMkts": 2, "coveredMkts": 1, "coverRate": 0.5, "stdReports": 6, "doneFreq": 1, "doneRate": 0.1667, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 0, 0, 0]}, {"region": "北部", "manager": "于立刚", "factory": "密山粮油", "need": 3, "have": 1, "targetMkts": 2, "coveredMkts": 2, "coverRate": 1.0, "stdReports": 6, "doneFreq": 3, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [0, 1, 0, 0, 1, 1]}, {"region": "北部", "manager": "于立刚", "factory": "富裕粮油", "need": 3, "have": 1, "targetMkts": 2, "coveredMkts": 2, "coverRate": 1.0, "stdReports": 6, "doneFreq": 3, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [0, 1, 1, 0, 1, 1]}, {"region": "北部", "manager": "于立刚", "factory": "张家口食品", "need": 2, "have": 1, "targetMkts": 1, "coveredMkts": 1, "coverRate": 1.0, "stdReports": 4, "doneFreq": 2, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 0, 1, 0, 0, 1]}, {"region": "北部", "manager": "于立刚", "factory": "沈阳粮油", "need": 8, "have": 2, "targetMkts": 3, "coveredMkts": 1, "coverRate": 0.3333, "stdReports": 8, "doneFreq": 1, "doneRate": 0.125, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 0, 0, 0, 0]}, {"region": "北部", "manager": "于立刚", "factory": "白城粮油", "need": 4, "have": 2, "targetMkts": 1, "coveredMkts": 1, "coverRate": 1.0, "stdReports": 4, "doneFreq": 2, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [0, 1, 1, 0, 1, 1]}, {"region": "北部", "manager": "于立刚", "factory": "盘锦粮油", "need": 8, "have": 2, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 0, 2, 1]}, {"region": "北部", "manager": "于立刚", "factory": "石家庄粮油", "need": 12, "have": 2, "targetMkts": 5, "coveredMkts": 5, "coverRate": 1.0, "stdReports": 12, "doneFreq": 5, "doneRate": 0.4167, "extraMkts": 0, "extraFreq": 0, "months": [1, 0, 1, 1, 1, 1]}, {"region": "北部", "manager": "于立刚", "factory": "营口嘉里", "need": 5, "have": 2, "targetMkts": 3, "coveredMkts": 2, "coverRate": 0.6667, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 0, 1, 2]}, {"region": "北部", "manager": "于立刚", "factory": "辽宁淀粉", "need": 4, "have": 1, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 0, 0, 2, 1]}, {"region": "北部", "manager": "于立刚", "factory": "金海粮油&食品", "need": 4, "have": 2, "targetMkts": 1, "coveredMkts": 1, "coverRate": 1.0, "stdReports": 4, "doneFreq": 2, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [0, 1, 0, 1, 1, 1]}, {"region": "北部", "manager": "于立刚", "factory": "霸州食品", "need": 5, "have": 2, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 0, 2, 0, 2]}, {"region": "南部", "manager": "谢振强", "factory": "东莞粮油", "need": 6, "have": 2, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 0, 1, 1]}, {"region": "南部", "manager": "谢振强", "factory": "南昌粮油", "need": 12, "have": 2, "targetMkts": 5, "coveredMkts": 3, "coverRate": 0.6, "stdReports": 12, "doneFreq": 3, "doneRate": 0.25, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 0, 1, 1]}, {"region": "南部", "manager": "谢振强", "factory": "南海油脂", "need": 8, "have": 2, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 1, 1]}, {"region": "南部", "manager": "谢振强", "factory": "吉安粮油", "need": 6, "have": 2, "targetMkts": 2, "coveredMkts": 2, "coverRate": 1.0, "stdReports": 6, "doneFreq": 3, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 0, 1]}, {"region": "南部", "manager": "谢振强", "factory": "岳阳粮油", "need": 3, "have": 1, "targetMkts": 2, "coveredMkts": 2, "coverRate": 1.0, "stdReports": 6, "doneFreq": 3, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [0, 0, 1, 1, 1, 0]}, {"region": "南部", "manager": "谢振强", "factory": "广东金厨", "need": 7, "have": 3, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 2, 1]}, {"region": "南部", "manager": "谢振强", "factory": "广州粮油", "need": 8, "have": 2, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 1, 1]}, {"region": "南部", "manager": "谢振强", "factory": "昆明食品", "need": 8, "have": 2, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [0, 1, 1, 1, 1, 1]}, {"region": "南部", "manager": "谢振强", "factory": "泉州粮油&食品", "need": 9, "have": 3, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 1, 1]}, {"region": "南部", "manager": "谢振强", "factory": "湖南粮油", "need": 6, "have": 2, "targetMkts": 3, "coveredMkts": 1, "coverRate": 0.3333, "stdReports": 8, "doneFreq": 1, "doneRate": 0.125, "extraMkts": 0, "extraFreq": 0, "months": [0, 0, 0, 1, 0, 1]}, {"region": "南部", "manager": "谢振强", "factory": "潮州食品&油脂", "need": 6, "have": 2, "targetMkts": 2, "coveredMkts": 2, "coverRate": 1.0, "stdReports": 6, "doneFreq": 3, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 1, 1]}, {"region": "南部", "manager": "谢振强", "factory": "茂名粮油", "need": 4, "have": 2, "targetMkts": 1, "coveredMkts": 1, "coverRate": 1.0, "stdReports": 4, "doneFreq": 2, "doneRate": 0.5, "extraMkts": 1, "extraFreq": 0, "months": [0, 1, 1, 0, 1, 1]}, {"region": "南部", "manager": "谢振强", "factory": "贵港粮油", "need": 8, "have": 2, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 1, 1]}, {"region": "南部", "manager": "谢振强", "factory": "防城港大海", "need": 4, "have": 1, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 1, 1]}, {"region": "西部", "manager": "安东", "factory": "兰州粮油", "need": 2, "have": 1, "targetMkts": 1, "coveredMkts": 1, "coverRate": 1.0, "stdReports": 4, "doneFreq": 1, "doneRate": 0.25, "extraMkts": 0, "extraFreq": 0, "months": [0, 0, 0, 0, 0, 1]}, {"region": "西部", "manager": "安东", "factory": "兴平食品", "need": 8, "have": 3, "targetMkts": 3, "coveredMkts": 2, "coverRate": 0.6667, "stdReports": 8, "doneFreq": 3, "doneRate": 0.375, "extraMkts": 0, "extraFreq": 0, "months": [0, 1, 1, 1, 0, 1]}, {"region": "西部", "manager": "安东", "factory": "太原粮油", "need": 8, "have": 3, "targetMkts": 3, "coveredMkts": 3, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 2, 1, 2]}, {"region": "西部", "manager": "安东", "factory": "成都粮食", "need": 8, "have": 4, "targetMkts": 2, "coveredMkts": 2, "coverRate": 1.0, "stdReports": 8, "doneFreq": 4, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [2, 1, 2, 0, 0, 2]}, {"region": "西部", "manager": "安东", "factory": "新疆马利", "need": 4, "have": 2, "targetMkts": 0, "coveredMkts": 0, "coverRate": 0.0, "stdReports": 0, "doneFreq": 0, "doneRate": 0.0, "extraMkts": 0, "extraFreq": 0, "months": [0, 0, 0, 0, 0, 0]}, {"region": "西部", "manager": "安东", "factory": "昌吉粮油", "need": 6, "have": 2, "targetMkts": 2, "coveredMkts": 2, "coverRate": 1.0, "stdReports": 6, "doneFreq": 3, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 1, 1, 1, 1, 1]}, {"region": "西部", "manager": "安东", "factory": "重庆粮油", "need": 6, "have": 2, "targetMkts": 2, "coveredMkts": 2, "coverRate": 1.0, "stdReports": 6, "doneFreq": 3, "doneRate": 0.5, "extraMkts": 0, "extraFreq": 0, "months": [1, 0, 1, 1, 1, 0]}], "regions": ["东部", "北部", "南部", "西部"]};
+const state = { region:'all', search:'', sortKey:'doneRate', sortDir:-1 };
+let factoryChart=null, monthChart=null, donutChart=null, mChart=null;
+
+const pct = v => (v*100).toFixed(1) + '%';
+const rateCls = v => v >= 0.5 ? 'rate-good' : (v >= 0.3 ? 'rate-mid' : 'rate-bad');
+const barColor = v => v>=0.5 ? '#1e9e63' : (v>=0.3 ? '#e8973a' : '#e0483f');
+
+/* ---------- filtering & sorting ---------- */
+function getFiltered(){
+  const kw = state.search.trim().toLowerCase();
+  let list = DATA.records.filter(r =>
+    (state.region==='all' || r.region===state.region) &&
+    (kw==='' || r.factory.toLowerCase().includes(kw) ||
+     r.manager.toLowerCase().includes(kw) || r.region.toLowerCase().includes(kw))
+  );
+  const k = state.sortKey, d = state.sortDir;
+  list = [...list].sort((a,b)=>{
+    const va=a[k], vb=b[k];
+    if (typeof va==='string') return va.localeCompare(vb,'zh')*d;
+    return (va-vb)*d;
+  });
+  return list;
+}
+
+/* ---------- KPI cards ---------- */
+function renderCards(list){
+  const s = (f)=>list.reduce((t,r)=>t+r[f],0);
+  const std=s('stdReports'), done=s('doneFreq'), tgt=s('targetMkts'), cov=s('coveredMkts');
+  const need=s('need'), have=s('have'), exm=s('extraMkts'), exf=s('extraFreq');
+  const dr = std? done/std:0, cr = tgt? cov/tgt:0, sr = need? have/need:0;
+  const cards = [
+    {label:'工厂数', value:list.length, cls:'v-blue', detail:`覆盖市场 ${cov}/${tgt}`},
+    {label:'完成率', value:pct(dr), cls:'v-red', detail:`已完成 ${done} / 标准 ${std}`},
+    {label:'覆盖率', value:pct(cr), cls:'v-green', detail:`已覆盖 ${cov} / 目标 ${tgt}`},
+    {label:'人员配置率', value:pct(sr), cls:'v-blue', detail:`已配 ${have} / 应配 ${need}`},
+    {label:'已完成总频次', value:done, cls:'v-green', detail:`全年标准量 ${std}`},
+    {label:'额外市场/频次', value:`${exm} / ${exf}`, cls:'v-red', detail:'目标市场之外新增'},
+  ];
+  document.getElementById('cards').innerHTML = cards.map(c =>
+    `<div class="card"><div class="label">${c.label}</div>` +
+    `<div class="value ${c.cls}">${c.value}</div>` +
+    `<div class="detail">${c.detail}</div></div>`).join('');
+  return {std, done, dr};
+}
+
+/* ---------- donut ---------- */
+function renderDonut(agg){
+  document.getElementById('donutBig').textContent = pct(agg.dr);
+  if (donutChart) donutChart.destroy();
+  donutChart = new Chart(document.getElementById('donut'), {
+    type:'doughnut',
+    data:{ labels:['已完成','未完成'],
+      datasets:[{ data:[agg.done, Math.max(agg.std-agg.done,0)],
+        backgroundColor:['#1e9e63','#e0483f'], borderWidth:0, cutout:'72%' }]},
+    options:{ plugins:{ legend:{display:false} } }
+  });
+}
+
+/* ---------- region bars (always all regions; click to filter) ---------- */
+function regionAgg(){
+  const m = {};
+  DATA.records.forEach(r=>{
+    const g = m[r.region] || (m[r.region]={count:0,std:0,done:0});
+    g.count++; g.std+=r.stdReports; g.done+=r.doneFreq;
+  });
+  return Object.entries(m).map(([region,g])=>({
+    region, count:g.count, std:g.std, done:g.done,
+    doneRate: g.std? g.done/g.std:0 })).sort((a,b)=>b.doneRate-a.doneRate);
+}
+function renderRegionBars(){
+  const rows = regionAgg();
+  document.getElementById('regionBars').innerHTML = rows.map(r=>{
+    const w = Math.min(r.doneRate*100,100);
+    const active = state.region===r.region ? ' active':'';
+    return `<div class="bar-row${active}" data-region="${r.region}">` +
+      `<div class="name">${r.region}（${r.count}厂）</div>` +
+      `<div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${barColor(r.doneRate)}"></div></div>` +
+      `<div class="pct">${pct(r.doneRate)} · ${r.done}/${r.std}</div></div>`;
+  }).join('');
+  document.querySelectorAll('.bar-row').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const rg = el.dataset.region;
+      state.region = (state.region===rg) ? 'all' : rg;
+      document.getElementById('regionSel').value = state.region;
+      renderAll();
+    });
+  });
+}
+
+/* ---------- factory chart ---------- */
+function renderFactoryChart(list){
+  const sorted = [...list].sort((a,b)=>b.doneRate-a.doneRate);
+  if (factoryChart) factoryChart.destroy();
+  factoryChart = new Chart(document.getElementById('factoryChart'), {
+    type:'bar',
+    data:{ labels:sorted.map(r=>r.factory),
+      datasets:[{ data:sorted.map(r=>+(r.doneRate*100).toFixed(1)),
+        backgroundColor:sorted.map(r=>barColor(r.doneRate)), borderRadius:3 }]},
+    options:{ indexAxis:'y', maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{ x:{ ticks:{ callback:v=>v+'%' }, grid:{color:'#f0f0f0'} },
+               y:{ ticks:{font:{size:10}}, grid:{display:false} } } }
+  });
+}
+
+/* ---------- month chart ---------- */
+function renderMonthChart(list){
+  const totals = [0,0,0,0,0,0];
+  list.forEach(r=> r.months.forEach((v,i)=> totals[i]+=v));
+  if (monthChart) monthChart.destroy();
+  monthChart = new Chart(document.getElementById('monthChart'), {
+    type:'bar',
+    data:{ labels:['1月','2月','3月','4月','5月','6月'],
+      datasets:[{ data:totals, backgroundColor:'#2b5aa7', borderRadius:4 }]},
+    options:{ maintainAspectRatio:false, plugins:{ legend:{display:false} },
+      scales:{ y:{ beginAtZero:true, grid:{color:'#f0f0f0'} }, x:{grid:{display:false}} } }
+  });
+}
+
+/* ---------- table ---------- */
+const COLS = [
+  {key:'_idx',   label:'#',     sortable:false},
+  {key:'region', label:'区域',  sortable:true},
+  {key:'factory',label:'工厂',  sortable:true},
+  {key:'need',   label:'应配',  sortable:true},
+  {key:'have',   label:'已配',  sortable:true},
+  {key:'targetMkts',label:'目标市场',sortable:true},
+  {key:'coveredMkts',label:'已覆盖',sortable:true},
+  {key:'coverRate',label:'覆盖率',sortable:true},
+  {key:'stdReports',label:'标准量',sortable:true},
+  {key:'doneFreq',label:'已完成',sortable:true},
+  {key:'doneRate',label:'完成率',sortable:true},
+  {key:'extraMkts',label:'额外市场',sortable:true},
+  {key:'extraFreq',label:'额外频次',sortable:true},
+];
+function renderHead(){
+  document.getElementById('thead').innerHTML = COLS.map(c=>{
+    let arr='';
+    if (c.sortable && state.sortKey===c.key) arr = state.sortDir===-1?'▼':'▲';
+    return `<th data-key="${c.key}" data-sortable="${c.sortable}">${c.label}<span class="arr">${arr}</span></th>`;
+  }).join('');
+  document.querySelectorAll('#thead th').forEach(th=>{
+    if (th.dataset.sortable!=='true') return;
+    th.addEventListener('click', ()=>{
+      const k = th.dataset.key;
+      if (state.sortKey===k) state.sortDir = -state.sortDir;
+      else { state.sortKey=k; state.sortDir=-1; }
+      renderAll();
+    });
+  });
+}
+function renderTable(list){
+  document.getElementById('tbody').innerHTML = list.map((r,i)=>
+    `<tr data-idx="${DATA.records.indexOf(r)}">` +
+    `<td>${i+1}</td><td>${r.region}</td><td class="left">${r.factory}</td>` +
+    `<td>${r.need}</td><td>${r.have}</td><td>${r.targetMkts}</td><td>${r.coveredMkts}</td>` +
+    `<td class="${rateCls(r.coverRate)}">${pct(r.coverRate)}</td>` +
+    `<td>${r.stdReports}</td><td>${r.doneFreq}</td>` +
+    `<td class="${rateCls(r.doneRate)}">${pct(r.doneRate)}</td>` +
+    `<td>${r.extraMkts}</td><td>${r.extraFreq}</td></tr>`).join('');
+  document.querySelectorAll('#tbody tr').forEach(tr=>{
+    tr.addEventListener('click', ()=> openModal(DATA.records[+tr.dataset.idx]));
+  });
+}
+
+/* ---------- detail modal ---------- */
+function openModal(r){
+  document.getElementById('mTitle').textContent = r.factory;
+  document.getElementById('mSub').textContent = `${r.region} · 负责人：${r.manager}`;
+  const items = [
+    ['应配/已配人数', `${r.need} / ${r.have}`],
+    ['目标/已覆盖市场', `${r.targetMkts} / ${r.coveredMkts}`],
+    ['覆盖率', pct(r.coverRate)],
+    ['全年标准量', r.stdReports],
+    ['已完成频次', r.doneFreq],
+    ['完成率', pct(r.doneRate)],
+    ['额外市场', r.extraMkts],
+    ['额外频次', r.extraFreq],
+  ];
+  document.getElementById('mGrid').innerHTML = items.map(([k,v])=>
+    `<div class="mitem"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+  if (mChart) mChart.destroy();
+  mChart = new Chart(document.getElementById('mChart'), {
+    type:'bar',
+    data:{ labels:['1月','2月','3月','4月','5月','6月'],
+      datasets:[{ label:'检查频次', data:r.months, backgroundColor:'#2b5aa7', borderRadius:4 }]},
+    options:{ maintainAspectRatio:false, plugins:{ legend:{display:false} },
+      scales:{ y:{ beginAtZero:true, grid:{color:'#f0f0f0'} }, x:{grid:{display:false}} } }
+  });
+  document.getElementById('modalMask').classList.add('show');
+}
+document.getElementById('modalClose').addEventListener('click', ()=>
+  document.getElementById('modalMask').classList.remove('show'));
+document.getElementById('modalMask').addEventListener('click', e=>{
+  if (e.target.id==='modalMask') e.target.classList.remove('show');
+});
+
+/* ---------- controls ---------- */
+function renderRegionSel(){
+  const sel = document.getElementById('regionSel');
+  sel.innerHTML = `<option value="all">全部区域</option>` +
+    DATA.regions.map(r=>`<option value="${r}">${r}</option>`).join('');
+  sel.value = state.region;
+}
+document.getElementById('regionSel').addEventListener('change', e=>{
+  state.region = e.target.value; renderAll();
+});
+document.getElementById('searchBox').addEventListener('input', e=>{
+  state.search = e.target.value; renderAll();
+});
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  state.region='all'; state.search=''; state.sortKey='doneRate'; state.sortDir=-1;
+  document.getElementById('searchBox').value='';
+  document.getElementById('regionSel').value='all';
+  renderAll();
+});
+
+/* ---------- master render ---------- */
+function renderAll(){
+  const list = getFiltered();
+  document.getElementById('countLabel').textContent =
+    `共 ${list.length} 家工厂 / 总 ${DATA.records.length} 家`;
+  const agg = renderCards(list);
+  renderDonut(agg);
+  renderRegionBars();
+  renderFactoryChart(list);
+  renderMonthChart(list);
+  renderHead();
+  renderTable(list);
+}
+
+renderRegionSel();
+renderAll();
+</script>
+</body>
+</html>
