@@ -105,6 +105,23 @@
   .mitem .v{ font-size:18px; font-weight:700; margin-top:3px; color:var(--navy); }
   .mchart-box{ height:220px; }
 
+  .gate{ position:fixed; inset:0; z-index:999; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#1a3a6b,#2b5aa7); }
+  .gate.hide{ display:none; }
+  .gate-box{ width:min(380px,90vw); background:#fff; border-radius:16px; padding:34px 32px 28px;
+    text-align:center; box-shadow:0 12px 50px rgba(0,0,0,.3); }
+  .gate-box .gicon{ font-size:34px; line-height:1; }
+  .gate-box h2{ font-size:19px; color:#1a3a6b; margin:12px 0 6px; letter-spacing:1px; }
+  .gate-box p{ font-size:12.5px; color:#888; margin-bottom:20px; }
+  .gate-box input{ width:100%; padding:11px 14px; border:1px solid #ccd6e3; border-radius:9px;
+    font-size:14px; text-align:center; letter-spacing:2px; outline:none; }
+  .gate-box input:focus{ border-color:#2b5aa7; }
+  .gate-box button{ width:100%; margin-top:14px; padding:11px; border:none; border-radius:9px;
+    background:linear-gradient(135deg,#1a3a6b,#2b5aa7); color:#fff; font-size:14px; font-weight:600;
+    cursor:pointer; letter-spacing:3px; transition:.2s; }
+  .gate-box button:hover{ opacity:.9; }
+  .gate-err{ color:#e0483f; font-size:12px; margin-top:12px; height:16px; }
+
   @media (max-width:1000px){ .row3{ grid-template-columns:1fr; } }
   @media (max-width:640px){
     .wrap{ padding:12px 12px 30px; }
@@ -118,6 +135,16 @@
 </style>
 </head>
 <body>
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div class="gicon">&#128274;</div>
+    <h2>工厂督查数据看板</h2>
+    <p>内部资料 · 请输入访问码查看</p>
+    <input id="gatePass" type="password" placeholder="请输入访问码" autocomplete="off">
+    <button id="gateBtn">进 入</button>
+    <div class="gate-err" id="gateErr"></div>
+  </div>
+</div>
 <div class="wrap">
 
   <div class="banner">
@@ -169,7 +196,7 @@
     </div>
   </div>
 
-  <div class="footer">数据更新时间：2026-07-25 21:40 · 每日自动同步 · 单文件可视化看板</div>
+  <div class="footer">数据更新时间：2026-07-25 22:15 · 每日自动同步 · 单文件可视化看板</div>
 </div>
 
 <div class="modal-mask" id="modalMask">
@@ -532,19 +559,55 @@ function renderAll(){
 }
 
 /* ---------- init ---------- */
-['gauge','radar','trend','top','warn','ring'].forEach(id=>{
-  charts[id] = echarts.init(document.getElementById(id+'Box'));
-});
-document.getElementById('factCount').textContent = DATA.records.length + '家工厂';
-renderRegionSel();
-renderRadar();
-renderAll();
-tickClock();
-setInterval(tickClock, 1000);
-window.addEventListener('resize', ()=>{
-  for (const k in charts) { if (charts[k]) charts[k].resize(); }
-  if (modalChart) modalChart.resize();
-});
+function bootDashboard(){
+  ['gauge','radar','trend','top','warn','ring'].forEach(id=>{
+    charts[id] = echarts.init(document.getElementById(id+'Box'));
+  });
+  document.getElementById('factCount').textContent = DATA.records.length + '家工厂';
+  renderRegionSel();
+  renderRadar();
+  renderAll();
+  tickClock();
+  setInterval(tickClock, 1000);
+  window.addEventListener('resize', ()=>{
+    for (const k in charts) { if (charts[k]) charts[k].resize(); }
+    if (modalChart) modalChart.resize();
+  });
+}
+
+/* ---------- access gate ---------- */
+const PASS_HASH = "c0d70a1f5f91dd0029d5842211ee4d32aadaea1610a5986ae460aad52b9f2cbf";   /* 空字符串 = 不启用访问码保护 */
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function unlock(){
+  document.getElementById('gate').classList.add('hide');
+  bootDashboard();
+}
+async function tryUnlock(){
+  const val = document.getElementById('gatePass').value;
+  const h = await sha256(val);
+  if (h === PASS_HASH){
+    try{ sessionStorage.setItem('db_unlocked','1'); }catch(e){}
+    unlock();
+  } else {
+    document.getElementById('gateErr').textContent = '访问码错误，请重试';
+    document.getElementById('gatePass').value = '';
+    document.getElementById('gatePass').focus();
+  }
+}
+(function(){
+  if (PASS_HASH === ""){ unlock(); return; }   /* 未配置访问码，直接进入 */
+  let already = false;
+  try{ already = sessionStorage.getItem('db_unlocked') === '1'; }catch(e){}
+  if (already){ unlock(); return; }
+  document.getElementById('gateBtn').addEventListener('click', tryUnlock);
+  document.getElementById('gatePass').addEventListener('keydown', e=>{
+    if (e.key === 'Enter') tryUnlock();
+  });
+  document.getElementById('gatePass').focus();
+})();
 </script>
 </body>
 </html>
