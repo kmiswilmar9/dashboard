@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工厂周边市场表现检查报告 2026年04月 兖州市标准市场</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; background:#eef1f6; color:#222; }
+  .banner { background:linear-gradient(135deg,#1f3b73,#2b5aa7 60%,#3a72c4); color:#fff; padding:22px 30px; }
+  .banner h1 { font-size:22px; font-weight:700; letter-spacing:1px; }
+  .banner .sub { margin-top:8px; font-size:13px; opacity:.94; display:flex; flex-wrap:wrap; gap:18px; }
+  .wrap { max-width:1340px; margin:0 auto; padding:18px 24px 40px; }
+  /* 顶部总览 */
+  .hero { display:grid; grid-template-columns:250px 1fr; background:linear-gradient(135deg,#ffffff,#f2f7ff); border-radius:16px; box-shadow:0 3px 16px rgba(30,50,90,.09); margin-bottom:16px; overflow:hidden; border:1px solid #e6edfa; }
+  .hero-gauge { padding:6px 8px; border-right:1px dashed #dbe5f5; }
+  .hero-concl { padding:20px 28px; display:flex; flex-direction:column; justify-content:center; }
+  .hero-tag { font-size:14px; font-weight:700; color:#2b5aa7; margin-bottom:10px; letter-spacing:.5px; }
+  .hero-concl p { font-size:14.5px; line-height:2.05; color:#33384a; }
+  .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:16px; }
+  .card { background:#fff; border-radius:14px; padding:16px 20px; box-shadow:0 2px 10px rgba(30,50,90,.06); position:relative; overflow:hidden; }
+  .card .lb { font-size:13px; color:#8a93a6; }
+  .card .vl { font-size:26px; font-weight:700; margin-top:6px; line-height:1.15; color:#1f3b73; }
+  .card .dt { font-size:12px; margin-top:6px; color:#9aa3b5; }
+  .card .bar { position:absolute; left:0; top:0; bottom:0; width:5px; }
+  .up { color:#1e9e63; } .dn { color:#e0483f; } .flat { color:#e8973a; }
+  /* 报表表格 */
+  .rt h4 { font-size:13.5px; color:#1f3b73; margin:18px 0 7px; padding-left:8px; border-left:3px solid #2b5aa7; }
+  .rt h4:first-child { margin-top:4px; }
+  .rt table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  .rt th,.rt td { padding:7px 8px; text-align:center; border:1px solid #e8edf6; }
+  .rt th { background:#eef3fb; color:#1f3b73; font-weight:600; }
+  .rt td.good { color:#1e9e63; font-weight:600; } .rt td.bad { color:#e0483f; font-weight:600; } .rt td.flatc { color:#e8973a; font-weight:600; }
+  .rt tr.sub td { background:#fbfcfe; font-weight:700; }
+  /* 通用面板 */
+  .panel { background:#fff; border-radius:14px; padding:16px 18px; box-shadow:0 2px 10px rgba(30,50,90,.06); margin-bottom:16px; }
+  .panel h3 { font-size:15px; color:#1f3b73; margin-bottom:4px; padding-left:10px; border-left:4px solid #2b5aa7; }
+  .panel .note { font-size:11px; color:#aab2c2; margin-bottom:4px; padding-left:14px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:16px; }
+  .chart { width:100%; height:320px; } .chart-sm { width:100%; height:260px; } .chart-lg { width:100%; height:360px; }
+  .footer { text-align:center; color:#aab2c2; font-size:12px; padding:18px; }
+  @media(max-width:900px){ .health{grid-template-columns:1fr;} .dimcards{grid-template-columns:repeat(2,1fr);} .grid2,.grid3{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="banner">
+  <h1>【工厂周边市场表现检查报告】2026年04月</h1>
+  <div class="sub">
+    <span>分公司：<b>徐州分公司</b></span>
+    <span>营业所：<b>济宁营业所</b></span>
+    <span>标准市场：<b>兖州市标准市场</b></span>
+    <span>经销商：<b>济宁市成昱礼品有限公司</b></span>
+    <span id="storesSpan">走访门店：<b>361 家</b></span>
+    <span id="baseInfo"></span>
+  </div>
+</div>
+<div class="wrap">
+
+  <!-- 顶部总览 -->
+  <div class="hero">
+    <div class="hero-gauge"><div id="c-gauge" style="width:100%;height:215px;"></div></div>
+    <div class="hero-concl">
+      <div class="hero-tag">★ 市场整体认知 · 自动诊断</div>
+      <p>考核维度中【产线分销】得分率最低（46%），是当前主要短板；产线达成：面粉－包装 已达/超 100% 目标，油－小包装、大米－包装、包装挂面 未达标。</p>
+    </div>
+  </div>
+  <div class="cards" id="cards"></div>
+
+  <!-- 环比变化 -->
+  <div class="panel">
+    <h3>环比变化一览（本次 vs 上次，得分变化）</h3>
+    <div class="note">绿色=上升，红色=下降，数值为分值变化量</div>
+    <div id="c-change" class="chart-sm"></div>
+  </div>
+
+  <!-- 子指标得分 -->
+  <div class="panel">
+    <h3>各评价指标得分明细（本次 / 上次 / 满分）</h3>
+    <div id="c-subs" class="chart"></div>
+  </div>
+
+  <!-- 分产线市场表现 -->
+  <div class="grid2">
+    <div class="panel" style="margin:0;"><h3>分产线总体铺市率（本次 vs 上次）</h3><div id="c-cover" class="chart"></div></div>
+    <div class="panel" style="margin:0;"><h3>分产线平均 SKU 数（本次 vs 上次）</h3><div id="c-sku" class="chart"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel" style="margin:0;"><h3>重点产线达成率（虚线为100%目标）</h3><div id="c-achieve" class="chart"></div></div>
+    <div class="panel" style="margin:0;"><h3>分产线平均货架占比（本次 vs 上次）</h3><div id="c-shelf" class="chart"></div></div>
+  </div>
+
+  <!-- 维度对比 -->
+  <div class="panel">
+    <h3 id="dimsTitle">四大维度得分率对比（本次 vs 上次）</h3>
+    <div class="note">得分率 = 本次得分 ÷ 满分，条形右侧标注得分率及较上次升降</div>
+    <div id="c-dims" class="chart-sm"></div>
+  </div>
+
+  <!-- 门店服务 -->
+  <div class="grid3">
+    <div class="panel" style="margin:0;"><h3>拜访频次分布</h3><div id="c-visit" class="chart-sm"></div></div>
+    <div class="panel" style="margin:0;"><h3 id="h3-delivery">送货及时性分布</h3><div id="c-delivery" class="chart-sm"></div></div>
+    <div class="panel" style="margin:0;"><h3 id="h3-material">物料使用分布</h3><div id="c-material" class="chart-sm"></div></div>
+  </div>
+
+  <!-- SKU & 产线分销标准 -->
+  <div class="grid2">
+    <div class="panel" style="margin:0;"><h3>产线分销达成（标准 vs 实际，按门店类型）</h3><div class="note">实际≥标准 为达标(绿)</div><div id="c-lineStd" class="chart"></div></div>
+    <div class="panel" style="margin:0;"><h3>SKU 分销达成（标准 vs 实际，按门店类型）</h3><div class="note">实际≥标准 为达标(绿)</div><div id="c-skuStd" class="chart"></div></div>
+  </div>
+
+  <!-- 报告明细报表 -->
+  <div class="panel">
+    <h3>报告明细报表（原报告格式）</h3>
+    <div class="note">▲ 绿=上升 ・ ▼ 红=下降 ・ ▶ 黄=持平 ；√ 达标(绿) ・ Χ 未达标(红)</div>
+    <div class="rt" id="reportTables"></div>
+  </div>
+
+</div>
+<div class="footer">数据来源：工厂周边市场表现检查报告 2026年04月 ・ 生成时间 2026-07-26 06:40 ・ 工厂督察一体化看板</div>
+
+<script>
+const D = {"tpl": "old", "month": "2026年04月", "company": "徐州分公司", "office": "济宁营业所", "market": "兖州市标准市场", "dealer": "济宁市成昱礼品有限公司", "stores": 361, "base": "人口 54.07万 ・ 益分销网点 406 家 ・ 网点覆盖率 88.9%", "storeTypes": [], "totalNow": 59.98, "totalLast": null, "lastPeriod": "前三个月无检查", "subs": [{"name": "产线分销", "dim": "市场检核评分", "full": 40, "now": 18.46, "last": null}, {"name": "SKU分销", "dim": "市场检核评分", "full": 30, "now": 15.07, "last": null}, {"name": "拜访频次", "dim": "市场检核评分", "full": 10, "now": 9.1, "last": null}, {"name": "送货及时性", "dim": "市场检核评分", "full": 10, "now": 8.064516129032258, "last": null}, {"name": "售后服务评价", "dim": "市场检核评分", "full": 10, "now": 9.290322580645162, "last": null}], "dims": [{"name": "产线分销", "now": 18.46, "full": 40, "last": 0, "hasLast": false}, {"name": "SKU分销", "now": 15.07, "full": 30, "last": 0, "hasLast": false}, {"name": "拜访频次", "now": 9.1, "full": 10, "last": 0, "hasLast": false}, {"name": "送货及时性", "now": 8.064516129032258, "full": 10, "last": 0, "hasLast": false}, {"name": "售后服务评价", "now": 9.290322580645162, "full": 10, "last": 0, "hasLast": false}], "lines": [{"name": "油-小包装", "coverNow": 0.9762, "coverLast": null, "skuNow": 6.27, "skuLast": null, "shelfNow": 0.5341, "shelfLast": null, "expireNow": null}, {"name": "大米-包装", "coverNow": 0.3611, "coverLast": null, "skuNow": 2.54, "skuLast": null, "shelfNow": 0.5, "shelfLast": null, "expireNow": null}, {"name": "面粉-包装", "coverNow": 0.5, "coverLast": null, "skuNow": 3.47, "skuLast": null, "shelfNow": 0.3971, "shelfLast": null, "expireNow": null}, {"name": "包装挂面", "coverNow": 0.2973, "coverLast": null, "skuNow": 1.36, "skuLast": null, "shelfNow": null, "shelfLast": null, "expireNow": null}, {"name": "调味油及酱料", "coverNow": 0.2222, "coverLast": null, "skuNow": 1.25, "skuLast": null, "shelfNow": null, "shelfLast": null, "expireNow": null}, {"name": "酱油", "coverNow": 0.1622, "coverLast": null, "skuNow": 2.5, "skuLast": null, "shelfNow": null, "shelfLast": null, "expireNow": null}, {"name": "醋", "coverNow": 0.1081, "coverLast": null, "skuNow": 1.25, "skuLast": null, "shelfNow": null, "shelfLast": null, "expireNow": null}, {"name": "日化", "coverNow": 0.069, "coverLast": null, "skuNow": 2.0, "skuLast": null, "shelfNow": null, "shelfLast": null, "expireNow": null}], "achieve": {"综合": 1.155097676663371, "油－小包装": 0.8410963516122736, "大米－包装": 0.6713480139671159, "面粉－包装": 1.6999920295338757, "包装挂面": 0.6883380353123911}, "service": {"visit": {"labels": ["每周≥1次", "每2周1次", "每月≤1次"], "now": [0.41, 0.5, 0.09], "last": null}, "delivery": {"name": "送货及时性评价", "score": 8.06}, "material": {"name": "售后服务评价", "score": 9.29}}, "sku": [{"combo": "", "type": "兖州市标准市场", "stores": null, "skuStd": null, "skuAct": null, "lineStd": null, "lineAct": null}, {"combo": "", "type": "城区商超AB店", "stores": null, "skuStd": 49.0, "skuAct": 22.5, "lineStd": 8.0, "lineAct": 2.75}, {"combo": "", "type": "城区小超市", "stores": null, "skuStd": 21.0, "skuAct": 2.4285714285714284, "lineStd": 5.0, "lineAct": 0.8571428571428571}, {"combo": "", "type": "城区食杂店", "stores": null, "skuStd": 12.0, "skuAct": 6.785714285714286, "lineStd": 5.0, "lineAct": 2.4285714285714284}, {"combo": "", "type": "城区生鲜店", "stores": null, "skuStd": 29.0, "skuAct": 15.0, "lineStd": 8.0, "lineAct": 3.0}, {"combo": "", "type": "城区农贸菜场", "stores": null, "skuStd": 14.0, "skuAct": null, "lineStd": 5.0, "lineAct": null}, {"combo": "", "type": "城区粮油店", "stores": null, "skuStd": 13.0, "skuAct": 11.923076923076923, "lineStd": 5.0, "lineAct": 3.076923076923077}, {"combo": "", "type": "城区便利店", "stores": null, "skuStd": 8.0, "skuAct": null, "lineStd": 4.0, "lineAct": null}, {"combo": "", "type": "乡镇商超AB店", "stores": null, "skuStd": 45.0, "skuAct": null, "lineStd": 8.0, "lineAct": null}, {"combo": "", "type": "乡镇小超市", "stores": null, "skuStd": 18.0, "skuAct": null, "lineStd": 5.0, "lineAct": null}, {"combo": "", "type": "乡镇食杂店", "stores": null, "skuStd": 10.0, "skuAct": null, "lineStd": 4.0, "lineAct": null}, {"combo": "", "type": "乡镇生鲜店", "stores": null, "skuStd": 22.0, "skuAct": null, "lineStd": 6.0, "lineAct": null}, {"combo": "", "type": "乡镇农贸菜场", "stores": null, "skuStd": 9.0, "skuAct": null, "lineStd": 2.0, "lineAct": null}, {"combo": "", "type": "乡镇粮油店", "stores": null, "skuStd": 9.0, "skuAct": null, "lineStd": 3.0, "lineAct": null}, {"combo": "", "type": "乡镇便利店", "stores": null, "skuStd": 7.0, "skuAct": null, "lineStd": 4.0, "lineAct": null}, {"combo": "", "type": "兖州市标准市场年累计销量达成", "stores": null, "skuStd": null, "skuAct": null, "lineStd": null, "lineAct": null}, {"combo": "", "type": "分公司", "stores": null, "skuStd": null, "skuAct": null, "lineStd": null, "lineAct": null}, {"combo": "", "type": "徐州分公司", "stores": null, "skuStd": null, "skuAct": null, "lineStd": null, "lineAct": null}, {"combo": "", "type": "徐州分公司", "stores": null, "skuStd": null, "skuAct": null, "lineStd": null, "lineAct": null}, {"combo": "", "type": "徐州分公司", "stores": null, "skuStd": null, "skuAct": null, "lineStd": null, "lineAct": null}, {"combo": "", "type": "徐州分公司", "stores": null, "skuStd": null, "skuAct": null, "lineStd": null, "lineAct": null}, {"combo": "", "type": "徐州分公司", "stores": null, "skuStd": null, "skuAct": null, "lineStd": null, "lineAct": null}, {"combo": "", "type": "徐州分公司", "stores": null, "skuStd": null, "skuAct": null, "lineStd": null, "lineAct": null}, {"combo": "", "type": "徐州分公司", "stores": null, "skuStd": null, "skuAct": null, "lineStd": null, "lineAct": null}], "skuTotal": {"stores": null, "lineStd": null, "lineAct": null, "skuStd": null, "skuAct": null}, "conclusion": "考核维度中【产线分销】得分率最低（46%），是当前主要短板；产线达成：面粉－包装 已达/超 100% 目标，油－小包装、大米－包装、包装挂面 未达标。"};
+const P = ['#2b5aa7','#1e9e63','#e8973a','#e0483f','#7a5af5','#17a2b8','#c47db5','#5a8f3c'];
+const charts = {};
+function ec(id){ if(!charts[id]) charts[id]=echarts.init(document.getElementById(id)); return charts[id]; }
+const p1 = v => v==null ? '-' : (v*100).toFixed(1)+'%';
+const f1 = v => v==null ? '-' : (Math.round(v*10)/10).toString();
+const f2 = v => v==null ? '-' : v.toFixed(2);
+const UP='#1e9e63', DN='#e0483f', GY='#c9d4e8';
+const lbl = (color,pos) => ({show:true, position:pos||'top', color:color||'#444', fontSize:10, fontWeight:'bold'});
+
+/* ---- 旧模板差异化适配 ---- */
+if(D.tpl==='old'){
+  document.getElementById('storesSpan').innerHTML = '已成交网点：<b>'+(D.stores|0)+' 家</b>';
+  if(D.base){ document.getElementById('baseInfo').innerHTML = '市场基础：<b>'+D.base+'</b>'; }
+  document.getElementById('dimsTitle').textContent = '五大检核项得分率对比（本次）';
+}
+/* 10分制得分仪表（旧模板送货及时性/售后服务） */
+function scoreGauge(id, name, score){
+  const v = score==null?0:score;
+  const gc = v>=8.5?'#1e9e63':(v>=7?'#2b5aa7':(v>=6?'#e8973a':'#e0483f'));
+  ec(id).setOption({
+    series:[{type:'gauge', startAngle:210, endAngle:-30, min:0, max:10, radius:'88%', center:['50%','58%'],
+      progress:{show:true, width:14, itemStyle:{color:gc}},
+      axisLine:{lineStyle:{width:14, color:[[1,'#e9edf5']]}},
+      axisTick:{show:false}, splitLine:{show:false}, axisLabel:{show:false},
+      pointer:{show:false}, anchor:{show:false},
+      title:{show:true, offsetCenter:[0,'32%'], fontSize:13, color:'#8a93a6'},
+      detail:{valueAnimation:true, offsetCenter:[0,'-6%'], fontSize:30, fontWeight:'bold', color:gc, formatter:x=>x.toFixed(2)},
+      data:[{value:v, name:name}]}]
+  });
+}
+
+/* ---- 综合体检仪表盘 ---- */
+(function(){
+  const t = D.totalNow||0;
+  let grade, gc;
+  if(t>=85){grade='优秀';gc='#1e9e63';} else if(t>=70){grade='良好';gc='#2b5aa7';}
+  else if(t>=60){grade='中等';gc='#e8973a';} else {grade='待改进';gc='#e0483f';}
+  ec('c-gauge').setOption({
+    series:[{type:'gauge', startAngle:210, endAngle:-30, min:0, max:100, radius:'92%', center:['50%','58%'],
+      progress:{show:true, width:16, itemStyle:{color:gc}},
+      axisLine:{lineStyle:{width:16, color:[[1,'#e9edf5']]}},
+      axisTick:{show:false}, splitLine:{show:false}, axisLabel:{show:false},
+      pointer:{show:false}, anchor:{show:false},
+      title:{show:true, offsetCenter:[0,'30%'], fontSize:15, color:gc, fontWeight:'bold'},
+      detail:{valueAnimation:true, offsetCenter:[0,'-8%'], fontSize:38, fontWeight:'bold', color:gc, formatter:v=>v.toFixed(1)},
+      data:[{value:t, name:grade+' ('+f2(D.totalLast)+')'}]}]
+  });
+})();
+
+/* ---- KPI 卡片 ---- */
+(function(){
+  const t = D.totalNow, tl = D.totalLast;
+  const delta = (t!=null && tl!=null) ? (t-tl) : null;
+  let dHtml = '较上次 '+f2(tl)+' 分';
+  if(delta!=null){ const cls=delta>=0?'up':'dn'; const ar=delta>=0?'▲':'▼';
+    dHtml = '较上次 '+tl.toFixed(2)+' 分 <span class="'+cls+'">'+ar+' '+Math.abs(delta).toFixed(2)+'</span>'; }
+  const ach = D.achieve['综合'];
+  const cards = [
+    {lb:'综合评估总得分', vl:f2(t)+'分', bar:'#2b5aa7', dt:dHtml},
+    {lb:(D.tpl==='old'?'已成交网点':'走访终端门店'), vl:(D.stores|0)+'家', bar:'#1e9e63',
+     dt:(D.tpl==='old' ? (D.base||'—') : D.storeTypes.map(s=>s.name+s.value+'家').join(' · '))},
+    {lb:'综合销量达成', vl:p1(ach), bar:'#e8973a', dt:'累计销量综合达成率'},
+    {lb:'经销商', vl:D.dealer||'-', bar:'#7a5af5', dt:'服务我司全产线', small:true},
+  ];
+  document.getElementById('cards').innerHTML = cards.map(c=>
+    '<div class="card"><div class="bar" style="background:'+c.bar+'"></div>'+
+    '<div class="lb">'+c.lb+'</div>'+
+    '<div class="vl" style="'+(c.small?'font-size:16px;':'')+'">'+c.vl+'</div>'+
+    '<div class="dt">'+c.dt+'</div></div>').join('');
+})();
+
+/* ---- 环比变化 diverging (箭头标注 升/降/持平) ---- */
+(function(){
+  const items = D.subs.filter(s=>s.last!=null && s.now!=null).map(s=>({name:s.name, ch:s.now-s.last}));
+  if(!items.length){
+    ec('c-change').setOption({title:{text:'暂无历史对比数据（首次检查）', left:'center', top:'middle', textStyle:{color:'#aab2c2', fontSize:14, fontWeight:'normal'}}});
+    return;
+  }
+  items.sort((a,b)=>a.ch-b.ch);
+  const FLAT='#e8973a';
+  const cls = ch => ch>0.05 ? {ar:'▲', c:UP} : (ch<-0.05 ? {ar:'▼', c:DN} : {ar:'▶', c:FLAT});
+  ec('c-change').setOption({
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, formatter:p=>{const v=p[0].value;const k=cls(v);return p[0].name+': '+k.ar+' '+(v>0?'+':'')+v.toFixed(2)+'分';}},
+    grid:{left:8, right:64, top:10, bottom:8, containLabel:true},
+    xAxis:{type:'value', splitLine:{lineStyle:{color:'#f0f0f0'}}, axisLabel:{color:'#888'}},
+    yAxis:{type:'category', data:items.map(i=>i.name), axisLabel:{color:'#444'}},
+    series:[{type:'bar', data:items.map(i=>({value:+i.ch.toFixed(2), itemStyle:{color:cls(i.ch).c, borderRadius:4}})),
+      barWidth:16, label:{show:true, position:'right', fontWeight:'bold',
+        formatter:p=>{const k=cls(p.value);return k.ar+' '+(p.value>0?'+':'')+p.value.toFixed(2);},
+        color:p=>cls(p.value).c}}]
+  });
+})();
+
+/* ---- 子指标得分 ---- */
+ec('c-subs').setOption({
+  tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
+  legend:{data:['本次得分','上次得分','满分'], top:0, textStyle:{fontSize:12}},
+  grid:{left:8, right:40, top:34, bottom:8, containLabel:true},
+  xAxis:{type:'value', splitLine:{lineStyle:{color:'#f0f0f0'}}, axisLabel:{color:'#888'}},
+  yAxis:{type:'category', data:D.subs.map(s=>s.name).reverse(), axisLabel:{color:'#444'}},
+  series:[
+    {name:'满分', type:'bar', data:D.subs.map(s=>s.full).reverse(), barWidth:9, itemStyle:{color:'#e9edf5', borderRadius:5}, z:1},
+    {name:'上次得分', type:'bar', data:D.subs.map(s=>s.last).reverse(), barWidth:9, itemStyle:{color:GY, borderRadius:5}, z:2,
+     label:{show:true, position:'right', formatter:p=>f1(p.value), color:'#9aa3b5', fontSize:10}},
+    {name:'本次得分', type:'bar', data:D.subs.map(s=>s.now).reverse(), barWidth:9, itemStyle:{color:'#2b5aa7', borderRadius:5}, z:3,
+     label:{show:true, position:'right', formatter:p=>f1(p.value), color:'#2b5aa7', fontSize:11, fontWeight:'bold'}}
+  ]
+});
+
+/* ---- 通用对比柱状 ---- */
+function cmpBar(id, getter, fmt, colorNow){
+  ec(id).setOption({
+    tooltip:{trigger:'axis', valueFormatter:v=>fmt(v)},
+    legend:{data:['本次','上次'], top:0, textStyle:{fontSize:12}},
+    grid:{left:8, right:24, top:34, bottom:30, containLabel:true},
+    xAxis:{type:'category', data:D.lines.map(l=>l.name), axisLabel:{color:'#666', interval:0, rotate:22, fontSize:11}},
+    yAxis:{type:'value', axisLabel:{color:'#888', formatter: fmt===p1 ? (v=>(v*100)+'%') : undefined}, splitLine:{lineStyle:{color:'#f0f0f0'}}},
+    series:[
+      {name:'本次', type:'bar', data:D.lines.map(l=>getter(l,'Now')), barWidth:13, itemStyle:{color:colorNow, borderRadius:[4,4,0,0]},
+       label:{show:true, position:'top', formatter:p=>fmt(p.value), color:colorNow, fontSize:9, fontWeight:'bold'}},
+      {name:'上次', type:'bar', data:D.lines.map(l=>getter(l,'Last')), barWidth:13, itemStyle:{color:GY, borderRadius:[4,4,0,0]},
+       label:{show:true, position:'top', formatter:p=>fmt(p.value), color:'#9aa3b5', fontSize:9}}
+    ]
+  });
+}
+cmpBar('c-cover', (l,s)=>l['cover'+s], p1, '#2b5aa7');
+cmpBar('c-sku',   (l,s)=>l['sku'+s],   f1, '#1e9e63');
+cmpBar('c-shelf', (l,s)=>l['shelf'+s], p1, '#7a5af5');
+
+/* ---- 产线达成 ---- */
+(function(){
+  const keys = Object.keys(D.achieve);
+  ec('c-achieve').setOption({
+    tooltip:{trigger:'axis', valueFormatter:v=>p1(v)},
+    grid:{left:8, right:32, top:24, bottom:8, containLabel:true},
+    xAxis:{type:'category', data:keys, axisLabel:{color:'#666', interval:0, fontSize:11}},
+    yAxis:{type:'value', axisLabel:{formatter:v=>(v*100)+'%', color:'#888'}, splitLine:{lineStyle:{color:'#f0f0f0'}}},
+    series:[{type:'bar', data:keys.map((k,i)=>({value:D.achieve[k],
+        itemStyle:{color: i==0?'#e8973a':(D.achieve[k]>=1?'#1e9e63':'#2b5aa7'), borderRadius:[5,5,0,0]}})),
+      barWidth:34, label:{show:true, position:'top', formatter:p=>p1(p.value), color:'#444', fontWeight:'bold'},
+      markLine:{silent:true, symbol:'none', data:[{yAxis:1, lineStyle:{color:'#e0483f', type:'dashed'}, label:{formatter:'目标100%', color:'#e0483f'}}]}}]
+  });
+})();
+
+/* ---- 维度得分率对比(替代雷达,一眼看懂) ---- */
+(function(){
+  const dims = D.dims;
+  const nowRate = dims.map(d=> d.full? +(d.now/d.full*100).toFixed(1):0);
+  const lastRate = dims.map(d=> (d.hasLast&&d.full)? +(d.last/d.full*100).toFixed(1):null);
+  ec('c-dims').setOption({
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>v==null?'-':v+'%'},
+    legend:{data:['本次得分率','上次得分率'], top:0, textStyle:{fontSize:12}},
+    grid:{left:8, right:90, top:34, bottom:8, containLabel:true},
+    xAxis:{type:'value', max:100, axisLabel:{formatter:'{value}%', color:'#888'}, splitLine:{lineStyle:{color:'#f0f0f0'}}},
+    yAxis:{type:'category', data:dims.map(d=>d.name).reverse(), axisLabel:{color:'#444', fontSize:12}},
+    series:[
+      {name:'上次得分率', type:'bar', data:lastRate.slice().reverse(), barWidth:11, itemStyle:{color:GY, borderRadius:5},
+       label:{show:true, position:'right', formatter:p=>p.value==null?'-':p.value+'%', color:'#9aa3b5', fontSize:10}},
+      {name:'本次得分率', type:'bar', data:nowRate.slice().reverse(), barWidth:11, itemStyle:{color:'#2b5aa7', borderRadius:5},
+       label:{show:true, position:'right', fontSize:11, fontWeight:'bold',
+         formatter:function(p){
+           const i = dims.length-1-p.dataIndex;
+           const lr = lastRate[i]; let ar='';
+           if(lr!=null){ const dd=nowRate[i]-lr;
+             ar = dd>0.5 ? '  ▲+'+dd.toFixed(1) : (dd<-0.5 ? '  ▼'+dd.toFixed(1) : '  ▶持平');
+             return p.value+'%'+ar; }
+           return p.value+'%';
+         },
+         color:function(p){ const i=dims.length-1-p.dataIndex; const lr=lastRate[i];
+           if(lr==null) return '#2b5aa7'; const dd=nowRate[i]-lr;
+           return dd>0.5?'#1e9e63':(dd<-0.5?'#e0483f':'#e8973a'); }
+       }}
+    ]
+  });
+})();
+
+/* ---- 服务三连饼 ---- */
+function donut(id, labels, data, colors){
+  ec(id).setOption({
+    tooltip:{trigger:'item', formatter:p=>p.name+': '+p1(p.value)+' ('+p.percent+'%)'},
+    legend:{bottom:0, textStyle:{fontSize:11}}, color:colors,
+    series:[{type:'pie', radius:['40%','62%'], center:['50%','42%'],
+      label:{formatter:p=>p.name+'\n'+p1(p.value), fontSize:11, fontWeight:'bold'},
+      data: labels.map((lb,i)=>({name:lb, value:data[i]}))}]
+  });
+}
+donut('c-visit', D.service.visit.labels, D.service.visit.now, ['#1e9e63','#e8973a','#e0483f']);
+if(D.tpl==='old'){
+  document.getElementById('h3-delivery').textContent = '送货及时性评价（得分/10）';
+  document.getElementById('h3-material').textContent = '售后服务评价（得分/10）';
+  scoreGauge('c-delivery', D.service.delivery.name, D.service.delivery.score);
+  scoreGauge('c-material', D.service.material.name, D.service.material.score);
+}else{
+  donut('c-delivery', D.service.delivery.labels, D.service.delivery.now, ['#1e9e63','#e8973a','#e0483f']);
+  donut('c-material', D.service.material.labels, D.service.material.now, ['#e0483f','#e8973a','#1e9e63']);
+}
+
+/* ---- SKU & 产线分销标准达成 ---- */
+function stdBar(id, stdKey, actKey, color){
+  const rows = D.sku.filter(r=>r.type!=='' && (r.stores==null || r.stores>0));
+  ec(id).setOption({
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
+    legend:{data:['标准','实际'], top:0, textStyle:{fontSize:12}},
+    grid:{left:8, right:24, top:34, bottom:40, containLabel:true},
+    xAxis:{type:'category', data:rows.map(r=> r.combo ? (r.combo+'\n('+r.stores+'家)') : r.type), axisLabel:{color:'#666', interval:0, fontSize:10}},
+    yAxis:{type:'value', axisLabel:{color:'#888'}, splitLine:{lineStyle:{color:'#f0f0f0'}}},
+    series:[
+      {name:'标准', type:'bar', data:rows.map(r=>r[stdKey]), barWidth:16, itemStyle:{color:GY, borderRadius:[4,4,0,0]},
+       label:{show:true, position:'top', formatter:p=>f1(p.value), color:'#9aa3b5', fontSize:9}},
+      {name:'实际', type:'bar', data:rows.map(r=>({value:r[actKey],
+         itemStyle:{color:(r[actKey]!=null&&r[stdKey]!=null&&r[actKey]>=r[stdKey])?'#1e9e63':'#e0483f', borderRadius:[4,4,0,0]}})),
+       barWidth:16, label:{show:true, position:'top', formatter:p=>f1(p.value), color:'#444', fontSize:9, fontWeight:'bold'}}
+    ]
+  });
+}
+stdBar('c-lineStd', 'lineStd', 'lineAct', '#2b5aa7');
+stdBar('c-skuStd', 'skuStd', 'skuAct', '#7a5af5');
+
+/* ---- 报告明细报表 ---- */
+(function(){
+  const arw = ch => ch==null ? '<span class="flatc">—</span>' :
+    (ch>0.05 ? '<span class="good">▲ 上升</span>' : (ch<-0.05 ? '<span class="bad">▼ 下降</span>' : '<span class="flatc">▶ 持平</span>'));
+  const pc = v => v==null ? '—' : (v*100).toFixed(1)+'%';
+  let h = '';
+  // 一、市场检查评分
+  h += '<h4>一、市场检查评分</h4><table><tr><th>维度</th><th>指标</th><th>本次得分</th><th>上次得分</th><th>满分</th><th>得分率</th><th>环比</th></tr>';
+  D.subs.forEach(s=>{
+    const rate = (s.now!=null&&s.full)? (s.now/s.full*100).toFixed(1)+'%' : '—';
+    const ch = (s.now!=null&&s.last!=null)? (s.now-s.last) : null;
+    h += '<tr><td>'+s.dim+'</td><td>'+s.name+'</td><td>'+f1(s.now)+'</td><td>'+f1(s.last)+'</td><td>'+s.full+'</td><td>'+rate+'</td><td>'+arw(ch)+'</td></tr>';
+  });
+  const tch = (D.totalNow!=null&&D.totalLast!=null)? (D.totalNow-D.totalLast):null;
+  h += '<tr class="sub"><td>合计</td><td>综合评估总得分</td><td>'+f2(D.totalNow)+'</td><td>'+f2(D.totalLast)+'</td><td>100</td><td>'+(D.totalNow!=null?D.totalNow.toFixed(1)+'%':'—')+'</td><td>'+arw(tch)+'</td></tr></table>';
+  // 二、分产线市场表现数据
+  h += '<h4>二、分产线市场表现数据</h4><table><tr><th>产线</th><th>铺市率(本次)</th><th>铺市率(上次)</th><th>平均SKU(本次)</th><th>平均SKU(上次)</th><th>货架占比(本次)</th><th>货架占比(上次)</th><th>铺市率环比</th></tr>';
+  D.lines.forEach(l=>{
+    const cch = (l.coverNow!=null&&l.coverLast!=null)? (l.coverNow-l.coverLast):null;
+    h += '<tr><td>'+l.name+'</td><td>'+pc(l.coverNow)+'</td><td>'+pc(l.coverLast)+'</td><td>'+f1(l.skuNow)+'</td><td>'+f1(l.skuLast)+'</td><td>'+pc(l.shelfNow)+'</td><td>'+pc(l.shelfLast)+'</td><td>'+arw(cch)+'</td></tr>';
+  });
+  h += '</table>';
+  // 三、门店整体表现（服务）
+  if(D.tpl==='old'){
+    h += '<h4>三、门店整体表现（服务）</h4><table><tr><th>项目</th><th>分类1</th><th>占比</th><th>分类2</th><th>占比</th><th>分类3</th><th>占比</th></tr>';
+    const v = D.service.visit||{}; const lb=v.labels||[]; const nw=v.now||[];
+    h += '<tr><td>拜访频次</td>';
+    for(let i=0;i<3;i++){ h += '<td>'+(lb[i]||'—')+'</td><td>'+pc(nw[i])+'</td>'; }
+    h += '</tr>';
+    h += '<tr><td>送货及时性评价</td><td colspan="6">得分 '+f1((D.service.delivery||{}).score)+' / 10</td></tr>';
+    h += '<tr><td>售后服务评价</td><td colspan="6">得分 '+f1((D.service.material||{}).score)+' / 10</td></tr>';
+    h += '</table>';
+  } else {
+    h += '<h4>三、门店整体表现（服务）</h4><table><tr><th>项目</th><th>分类1</th><th>占比</th><th>分类2</th><th>占比</th><th>分类3</th><th>占比</th></tr>';
+    [['visit','拜访频次'],['delivery','送货及时性'],['material','物料使用']].forEach(([k,nm])=>{
+      const d = D.service[k]||{}; const lb=d.labels||[]; const nw=d.now||[];
+      h += '<tr><td>'+nm+'</td>';
+      for(let i=0;i<3;i++){ h += '<td>'+(lb[i]||'—')+'</td><td>'+pc(nw[i])+'</td>'; }
+      h += '</tr>';
+    });
+    h += '</table>';
+  }
+  // 四、SKU & 产线分销标准达成
+  h += '<h4>四、SKU & 产线分销标准达成（按'+(D.tpl==='old'?'客户类型':'门店类型')+'）</h4><table><tr><th>'+(D.tpl==='old'?'客户类型':'参数组合')+'</th><th>'+(D.tpl==='old'?'—':'客户类型')+'</th><th>门店数</th><th>产线标准</th><th>产线实际</th><th>SKU标准</th><th>SKU实际</th><th>达成判定</th></tr>';
+  D.sku.forEach(r=>{
+    if(r.type===''){ return; }
+    if(r.stores!=null && r.stores<=0){ return; }
+    const lok = r.lineAct!=null&&r.lineStd!=null&&r.lineAct>=r.lineStd;
+    const sok = r.skuAct!=null&&r.skuStd!=null&&r.skuStd>0&&r.skuAct>=r.skuStd;
+    const judge = (lok&&sok)?'<span class="good">√ 达标</span>':((!lok&&!sok)?'<span class="bad">Χ 未达标</span>':'<span class="flatc">△ 部分达标</span>');
+    const c1 = D.tpl==='old' ? r.type : r.combo;
+    const c2 = D.tpl==='old' ? '—' : r.type;
+    h += '<tr><td>'+c1+'</td><td>'+c2+'</td><td>'+(r.stores==null?'—':r.stores)+'</td><td>'+f1(r.lineStd)+'</td><td class="'+(lok?'good':'bad')+'">'+f1(r.lineAct)+'</td><td>'+f1(r.skuStd)+'</td><td class="'+(sok?'good':'bad')+'">'+f1(r.skuAct)+'</td><td>'+judge+'</td></tr>';
+  });
+  const tt = D.skuTotal||{};
+  h += '<tr class="sub"><td>合计</td><td>—</td><td>'+(tt.stores==null?'—':tt.stores)+'</td><td>'+f1(tt.lineStd)+'</td><td>'+f1(tt.lineAct)+'</td><td>'+f1(tt.skuStd)+'</td><td>'+f1(tt.skuAct)+'</td><td>—</td></tr></table>';
+  document.getElementById('reportTables').innerHTML = h;
+})();
+
+window.addEventListener('resize', ()=>{ Object.values(charts).forEach(c=>c.resize()); });
+</script>
+</body>
+</html>
