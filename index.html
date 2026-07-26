@@ -347,7 +347,7 @@
     </div>
   </div>
 
-  <div class="footer">数据更新时间：2026-07-27 07:10 · 每日自动同步 · 五模块一体化看板</div>
+  <div class="footer">数据更新时间：2026-07-27 07:22 · 每日自动同步 · 五模块一体化看板</div>
 </div>
 
 <div class="modal-mask" id="modalMask">
@@ -1020,6 +1020,7 @@ function renderM9(){
       if(key==='branch'){orgSel.office='';orgSel.factory='';}
       if(key==='office'){orgSel.factory='';}
       refreshOrgFilters();
+      refreshPersonFilter();
       buildM9();
     });
   });
@@ -1034,11 +1035,21 @@ function renderM9(){
       +ct+' <span style="color:#999;margin-left:auto;">('+ctCount[ct]+')</span></label>';
   });
   document.getElementById('m9-legend').innerHTML=lgHtml;
-  // 督察选择
-  const persons=Object.keys(MD.person_count||{}).sort();
-  let optHtml='<option value="">— 选择工厂督察 —</option>';
-  persons.forEach(p=>{ optHtml+='<option value="'+p+'">'+p+' ('+MD.person_count[p]+')</option>'; });
-  document.getElementById('m9-person').innerHTML=optHtml;
+  // 督察选择（跟随组织筛选联动）
+  function refreshPersonFilter(){
+    let base=pts;
+    if(orgSel.region) base=base.filter(p=>p.region===orgSel.region);
+    if(orgSel.branch) base=base.filter(p=>p.branch===orgSel.branch);
+    if(orgSel.office) base=base.filter(p=>p.office===orgSel.office);
+    if(orgSel.factory) base=base.filter(p=>p.factory===orgSel.factory);
+    const pc={};
+    base.forEach(p=>{ pc[p.person]=(pc[p.person]||0)+1; });
+    const names=Object.keys(pc).sort((a,b)=>a.localeCompare(b,'zh'));
+    let optHtml='<option value="">— 选择工厂督察 ('+names.length+'人) —</option>';
+    names.forEach(p=>{ optHtml+='<option value="'+p+'">'+p+' ('+pc[p]+')</option>'; });
+    document.getElementById('m9-person').innerHTML=optHtml;
+  }
+  refreshPersonFilter();
   // 绘制点位
   function buildM9(){
     m9PtLayer.clearLayers();
