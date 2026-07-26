@@ -319,24 +319,30 @@
     <div class="panel" id="m9-head" style="padding:14px 18px"></div>
     <div class="panel" style="padding:0;overflow:hidden;position:relative;">
       <div id="m9-map" style="width:100%;height:620px;"></div>
-      <div id="m9-panel" style="position:absolute;top:12px;left:12px;z-index:1000;width:260px;max-height:590px;overflow-y:auto;background:rgba(255,255,255,0.96);border-radius:10px;box-shadow:0 2px 14px rgba(0,0,0,0.25);padding:14px;display:none;">
-        <div style="font-size:13px;font-weight:bold;color:#333;margin:0 0 6px;border-left:3px solid #305496;padding-left:6px;">客户类型（点击筛选）</div>
-        <div id="m9-legend"></div>
-        <div style="font-size:13px;font-weight:bold;color:#333;margin:12px 0 6px;border-left:3px solid #305496;padding-left:6px;">按督察查看路线</div>
-        <select id="m9-person" style="width:100%;padding:6px 8px;font-size:12px;border:1px solid #ccc;border-radius:6px;"></select>
-        <div style="display:flex;gap:6px;margin-top:6px;">
-          <button id="m9-btnRoute" style="flex:1;padding:6px;font-size:12px;background:#305496;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">显示路线</button>
-          <button id="m9-btnClear" style="flex:1;padding:6px;font-size:12px;background:#6c757d;color:#fff;border:none;border-radius:6px;cursor:pointer;">清除</button>
+      <div id="m9-panel" style="position:absolute;top:12px;left:12px;z-index:1000;width:260px;background:rgba(255,255,255,0.96);border-radius:10px;box-shadow:0 2px 14px rgba(0,0,0,0.25);display:none;">
+        <div id="m9-toggle" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;">
+          <span style="font-size:13px;font-weight:bold;color:#1a3a6b;">筛选 / 路线</span>
+          <span id="m9-toggle-icon" style="font-size:16px;color:#305496;transition:transform .2s;">▼</span>
         </div>
-        <div style="font-size:11px;color:#666;margin-top:8px;line-height:1.5;">路线按提交时间先后连接该督察当天走访门店，序号即走访顺序。</div>
-        <div style="font-size:13px;font-weight:bold;color:#333;margin:12px 0 6px;border-left:3px solid #305496;padding-left:6px;">显示控制</div>
-        <label style="display:flex;align-items:center;font-size:12px;margin:3px 0;cursor:pointer;"><input type="checkbox" id="m9-chkPts" checked style="margin-right:6px;"> 显示门店点位</label>
-        <div id="m9-stat" style="font-size:12px;color:#333;background:#f0f4fa;border-radius:6px;padding:6px 8px;margin-top:10px;"></div>
+        <div id="m9-body" style="max-height:540px;overflow-y:auto;padding:0 14px 14px;">
+          <div style="font-size:13px;font-weight:bold;color:#333;margin:0 0 6px;border-left:3px solid #305496;padding-left:6px;">客户类型（点击筛选）</div>
+          <div id="m9-legend"></div>
+          <div style="font-size:13px;font-weight:bold;color:#333;margin:12px 0 6px;border-left:3px solid #305496;padding-left:6px;">按督察查看路线</div>
+          <select id="m9-person" style="width:100%;padding:6px 8px;font-size:12px;border:1px solid #ccc;border-radius:6px;"></select>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <button id="m9-btnRoute" style="flex:1;padding:6px;font-size:12px;background:#305496;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">显示路线</button>
+            <button id="m9-btnClear" style="flex:1;padding:6px;font-size:12px;background:#6c757d;color:#fff;border:none;border-radius:6px;cursor:pointer;">清除</button>
+          </div>
+          <div style="font-size:11px;color:#666;margin-top:8px;line-height:1.5;">路线按提交时间先后连接该督察当天走访门店，序号即走访顺序。</div>
+          <div style="font-size:13px;font-weight:bold;color:#333;margin:12px 0 6px;border-left:3px solid #305496;padding-left:6px;">显示控制</div>
+          <label style="display:flex;align-items:center;font-size:12px;margin:3px 0;cursor:pointer;"><input type="checkbox" id="m9-chkPts" checked style="margin-right:6px;"> 显示门店点位</label>
+          <div id="m9-stat" style="font-size:12px;color:#333;background:#f0f4fa;border-radius:6px;padding:6px 8px;margin-top:10px;"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="footer">数据更新时间：2026-07-27 06:50 · 每日自动同步 · 五模块一体化看板</div>
+  <div class="footer">数据更新时间：2026-07-27 06:55 · 每日自动同步 · 五模块一体化看板</div>
 </div>
 
 <div class="modal-mask" id="modalMask">
@@ -960,6 +966,14 @@ function renderM9(){
   document.getElementById('m9-head').innerHTML='<b style="color:#1a3a6b;font-size:15px;">门店分布地图</b>'
     +' <span style="font-size:12px;color:#888;margin-left:12px;">数据源：'+MD.source+' ｜ 共 '+MD.total+' 个点位 · '+Object.keys(MD.person_count||{}).length+' 名督察</span>';
   document.getElementById('m9-panel').style.display='block';
+  // 面板收起/展开
+  document.getElementById('m9-toggle').addEventListener('click',function(){
+    const body=document.getElementById('m9-body');
+    const icon=document.getElementById('m9-toggle-icon');
+    if(body.style.display==='none'){ body.style.display='block'; icon.style.transform='rotate(0deg)'; }
+    else{ body.style.display='none'; icon.style.transform='rotate(-90deg)'; }
+    setTimeout(function(){ if(m9Map) m9Map.invalidateSize(); },50);
+  });
   // 初始化地图（只初始化一次）
   if(!m9Inited){
     m9Map=L.map('m9-map',{preferCanvas:true}).setView([35.5,110.0],5);
