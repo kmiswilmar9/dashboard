@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工作交付物索引 · 张禹</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#f0f2f5;color:#333;min-height:100vh}
+.hd{background:linear-gradient(135deg,#1a3a6b,#305496);color:#fff;padding:28px 24px 22px;text-align:center}
+.hd h1{font-size:22px;font-weight:600;margin-bottom:6px}
+.hd p{font-size:13px;opacity:.8}
+.search-bar{max-width:600px;margin:-18px auto 0;position:relative;z-index:2;padding:0 16px}
+.search-bar input{width:100%;padding:12px 16px 12px 40px;border:none;border-radius:10px;font-size:14px;
+  box-shadow:0 4px 16px rgba(0,0,0,.12);outline:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E") 14px center no-repeat}
+.wrap{max-width:1000px;margin:24px auto;padding:0 16px 60px}
+.cat{margin-bottom:28px}
+.cat-hd{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e8e8e8}
+.cat-hd .icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff}
+.cat-hd h2{font-size:15px;color:#1a3a6b;font-weight:600}
+.cat-hd .cnt{font-size:11px;color:#999;margin-left:auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.06);
+  transition:box-shadow .2s,transform .15s;cursor:default;position:relative}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+.card h3{font-size:13px;font-weight:600;color:#222;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.card p{font-size:12px;color:#666;line-height:1.6}
+.card .meta{margin-top:8px;font-size:11px;color:#aaa;display:flex;gap:10px;flex-wrap:wrap}
+.card a{color:#1a73e8;text-decoration:none;font-size:12px;font-weight:500}
+.card a:hover{text-decoration:underline}
+.tag{display:inline-block;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:500}
+.tag-online{background:#e6f7ee;color:#1e9e63}
+.tag-local{background:#fff3e0;color:#e8973a}
+.tag-file{background:#eef4fe;color:#305496}
+.tag-auto{background:#f3e8ff;color:#7b3ff2}
+.hidden{display:none!important}
+.footer{text-align:center;padding:20px;font-size:11px;color:#bbb}
+@media(max-width:600px){.cards{grid-template-columns:1fr}.hd h1{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="hd">
+  <h1>工作交付物索引</h1>
+  <p>所有做过的事、产出的文件，一页找到 · 更新于 2026-07-31</p>
+</div>
+<div class="search-bar"><input id="q" placeholder="搜索关键词，如：看板、路线、排名、PPT…" oninput="doSearch()"></div>
+<div class="wrap" id="app"></div>
+<div class="footer">张禹 · 市场洞察组 · 本页部署于 GitHub Pages，随时可查</div>
+
+<script>
+const DATA=[
+{cat:"在线看板 & 系统",icon:"🌐",color:"#1a73e8",items:[
+ {t:"每日达成数据看板",d:"工厂督查每日检查进度、达成率、错误率，按人/按工厂钻取，每日自动更新",url:"https://kmiswilmar9.github.io/dashboard/daily.html",tag:"online",date:"每日05:43自动更新"},
+ {t:"月度汇总看板",d:"1-6月各工厂检查量、达成率趋势、环比分析",url:"https://kmiswilmar9.github.io/dashboard/monthly.html",tag:"online",date:"2026-07"},
+ {t:"总览首页（进度统计）",d:"全国工厂周边市场检查年度进度，自动更新",url:"https://kmiswilmar9.github.io/dashboard/index.html",tag:"online",date:"持续更新"},
+ {t:"H2 检查线路地图（总图）",d:"162个标准市场检查线路规划总览，点击可进入各市场明细",url:"https://kmiswilmar9.github.io/dashboard/h2plan/H2_2026_检查线路地图.html",tag:"online",date:"2026-07-29"},
+ {t:"益分销客户规划地图（网页版）",d:"带权限的B/S系统：登录→总图→市场明细→门店拜访路线规划（驾车/骑行/步行），计划锁定窗口25日~月底",url:"http://10.240.206.185:8000",tag:"local",date:"内网访问 · 账号 zhangyu/admin@2026"},
+ {t:"2026上半年复查市场对比分析看板",d:"H1复查市场前后对比，含手机版",url:"",tag:"file",date:"2026-07-30",file:"2026上半年复查市场对比分析看板.html"},
+]},
+{cat:"数据报表",icon:"📊",color:"#1e9e63",items:[
+ {t:"工厂督查人员达成排名表",d:"按人汇总：区域、标准市场、月度目标、累计达成、达成率、错误率，带条件格式",tag:"file",date:"2026-07-30",file:"工厂督查人员达成排名表_20260730.xlsx"},
+ {t:"工厂督察月度激励费用核算",d:"每月自动跑：激励金额、审核扣发、倒休、跨城市远距离加价",tag:"auto",date:"每月自动",file:"july/工厂督察月度激励费用核算_0726_230256.xlsx"},
+ {t:"工厂督查统计报表",d:"按工厂/按人维度的检查量、错误率、虚假数据率汇总",tag:"auto",date:"每日自动"},
+ {t:"数据质量深度分析",d:"全量+去商超AB版，错误类型分布、趋势",tag:"file",date:"2026-07-16",file:"数据质量深度分析_全量及去AB_0716_001148.xlsx"},
+ {t:"H2 月度工作计划报表（增强版）",d:"各市场月度检查计划排期，含街道覆盖",tag:"file",date:"2026-07-28",file:"H2_2026_月度工作计划报表_增强版.xlsx"},
+ {t:"2026上半年复查市场对比分析",d:"复查前后油/米/面铺货率变化明细",tag:"file",date:"2026-07-30",file:"2026上半年复查市场对比分析.xlsx"},
+ {t:"工厂维度检查汇总 1-6月",d:"按工厂聚合的半年度检查数据",tag:"file",date:"2026-07",file:"工厂维度检查汇总_1-6月.xlsx"},
+ {t:"6月工厂周边市场表现检查汇总表",d:"全国汇总+箭头条件格式+环比上升筛选",tag:"file",date:"2026-07-13",file:"202606月工厂周边市场表现检查汇总表--全国_arrows.xlsx"},
+ {t:"大米/油爆品到店检查报告",d:"多门店版+月度汇总，模板可复用",tag:"file",date:"2026-07",file:"油米爆品到店检查报告_完整版.xlsx"},
+ {t:"督察市场检查明细 202607",d:"7月原始检查明细数据",tag:"file",date:"2026-07",file:"督察市场检查明细_202607.xlsx"},
+]},
+{cat:"PPT & 文档",icon:"📑",color:"#e8973a",items:[
+ {t:"6月工厂督察工作总结（模板版）",d:"最终版PPT，含数据图表、工作亮点、下月计划",tag:"file",date:"2026-07-16",file:"6月工厂督察工作总结_模板版_0716_074826.pptx"},
+ {t:"2026年工厂周边市场检查年度规划现状分析",d:"年度规划执行情况汇报PPT",tag:"file",date:"2026-07-16",file:"2026年工厂周边市场检查年度规划现状分析.pptx"},
+ {t:"市场洞察组战略转型与协同运作方案",d:"数字化转型方向、跨中心协同机制PPT",tag:"file",date:"2026-07",file:"市场洞察组战略转型与协同运作方案.pptx"},
+ {t:"市场洞察组协同运作及指标排名管理体系方案",d:"指标体系、排名规则、流转流程文档",tag:"file",date:"2026-07",file:"市场洞察组协同运作及指标排名管理体系方案.docx"},
+ {t:"市场数据洞察中心·跨中心整合运作方案",d:"跨部门数据流转、职责分工方案",tag:"file",date:"2026-07",file:"市场数据洞察中心·跨中心整合运作方案.docx"},
+ {t:"AI工作与应用总结（月度分享）",d:"本月AI工具应用成果汇报文档",tag:"file",date:"2026-07-16",file:"AI工作与应用总结_本月报告分享.docx"},
+ {t:"益分销客户规划地图系统·部署说明文档",d:"B/S架构部署指南：环境、安装、Nginx配置",tag:"file",date:"2026-07-29",file:"益分销客户规划地图系统_部署说明文档.docx"},
+]},
+{cat:"地图 & 规划工具",icon:"🗺️",color:"#7b3ff2",items:[
+ {t:"益分销客户规划地图（离线版）",d:"单HTML文件，含门店数据+路线规划，无需服务器，双击打开",tag:"file",date:"2026-07-28",file:"益分销客户规划地图_离线版.zip"},
+ {t:"H2 备选市场挑选",d:"交互式筛选工具：按条件过滤备选市场",tag:"file",date:"2026-07-29",file:"H2_2026_备选市场挑选.html"},
+ {t:"H2 月度工作计划看板",d:"各市场计划进度可视化",tag:"file",date:"2026-07-28",file:"H2_2026_月度工作计划看板.html"},
+ {t:"门店分布地图",d:"苏州工业园城区标准市场门店点位分布",tag:"file",date:"2026-07",file:"july/门店分布地图.html"},
+ {t:"市场洞察组业务转型思维导图",d:"交互式思维导图HTML版",tag:"file",date:"2026-07",file:"市场洞察组_业务转型思维导图.html"},
+]},
+{cat:"自动化工具 & 脚本",icon:"⚙️",color:"#555",items:[
+ {t:"每日数据管线 (daily_pipeline.py)",d:"一键完成：益分销下载→清洗→达成计算→日报生成→GitHub Pages推送",tag:"auto",date:"每日05:43定时"},
+ {t:"企微推送消息生成",d:"自动生成群内进度催促消息（Markdown+纯文本），含预警",tag:"auto",date:"按需运行"},
+ {t:"益分销数据自动下载 (yfx_export_final.py)",d:"CAS纯HTTP登录+API导出，绕过验证码",tag:"auto",date:"管线第1步"},
+ {t:"工厂督察月度处理 (run_factory_audit_auto.py)",d:"数据清洗+激励核算+统计报表，月度一键",tag:"auto",date:"每月"},
+ {t:"GitHub Pages 自动部署 (update_dashboard.py)",d:"看板数据更新后自动git push到线上",tag:"auto",date:"管线最后一步"},
+]},
+];
+
+function render(){
+ const app=document.getElementById('app');
+ let html='';
+ DATA.forEach(c=>{
+  html+=`<div class="cat" data-cat="${c.cat}"><div class="cat-hd"><div class="icon" style="background:${c.color}">${c.icon}</div><h2>${c.cat}</h2><span class="cnt">${c.items.length} 项</span></div><div class="cards">`;
+  c.items.forEach(it=>{
+   const tagCls=it.tag==='online'?'tag-online':it.tag==='local'?'tag-local':it.tag==='auto'?'tag-auto':'tag-file';
+   const tagTxt=it.tag==='online'?'在线':it.tag==='local'?'内网':it.tag==='auto'?'自动化':'文件';
+   let link='';
+   if(it.url) link=`<a href="${it.url}" target="_blank">打开 →</a>`;
+   else if(it.file) link=`<span style="color:#999;font-size:11px">📁 ${it.file}</span>`;
+   html+=`<div class="card" data-text="${it.t} ${it.d} ${it.file||''} ${c.cat}">
+     <h3><span class="tag ${tagCls}">${tagTxt}</span>${it.t}</h3>
+     <p>${it.d}</p>
+     <div class="meta"><span>📅 ${it.date||''}</span>${link?'<span>'+link+'</span>':''}</div>
+   </div>`;
+  });
+  html+=`</div></div>`;
+ });
+ app.innerHTML=html;
+}
+function doSearch(){
+ const q=document.getElementById('q').value.trim().toLowerCase();
+ document.querySelectorAll('.card').forEach(c=>{
+  c.classList.toggle('hidden',q&&!c.dataset.text.toLowerCase().includes(q));
+ });
+ document.querySelectorAll('.cat').forEach(cat=>{
+  const vis=cat.querySelectorAll('.card:not(.hidden)').length;
+  cat.classList.toggle('hidden',q&&vis===0);
+  const cnt=cat.querySelector('.cnt');
+  if(cnt) cnt.textContent=q?`${vis} 项匹配`:`${cat.querySelectorAll('.card').length} 项`;
+ });
+}
+render();
+</script>
+</body>
+</html>
