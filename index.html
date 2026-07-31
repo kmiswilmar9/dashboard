@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/dashboard/manifest.json">
+<meta name="theme-color" content="#16213e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="督察日报">
+<link rel="apple-touch-icon" href="/dashboard/icon-192.png">
 <title>工厂督察一体化数据看板</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -382,7 +388,7 @@
     </div>
   </div>
 
-  <div class="footer">数据更新时间：2026-07-31 09:30 · 每日自动同步 · 五模块一体化看板</div>
+  <div class="footer">数据更新时间：2026-07-31 05:43 · 每日自动同步 · 五模块一体化看板</div>
 </div>
 
 <div class="modal-mask" id="modalMask">
@@ -801,7 +807,7 @@ let renderM6 = function(){ emptyTip('m6-kpis','月度汇总数据待生成（请
   }
   const COLS6=[{k:'ym',t:'年月'},{k:'comp',t:'分公司'},{k:'office',t:'营业所'},{k:'market',t:'标准市场'},{k:'dealer',t:'经销商'},
     {k:'stores',t:'网点数'},{k:'total',t:'综合得分'},{k:'delta',t:'较上次'},{k:'ach',t:'综合达成'},{k:'cover',t:'铺市率'},{k:'report',t:'查看报告',nosort:1}];
-  const reportUrl = r => 'https://kmiswilmar9.github.io/dashboard/reports/'+r.y+r.m+'/'+encodeURIComponent(r.comp+'-'+r.office+'-'+r.market)+'.html';
+  const reportUrl = r => 'https://factory-dashboard-5e9.pages.dev/dashboard/reports/'+r.y+r.m+'/'+encodeURIComponent(r.comp+'-'+r.office+'-'+r.market)+'.html';
   function sortVal(r,k){ if(k==='ym')return r.y+r.m;
     if(k==='delta')return (r.total!=null&&r.totalLast!=null)?(r.total-r.totalLast):-9999;
     if(k==='ach')return (r.achieve&&r.achieve['综合']!=null)?r.achieve['综合']:-1;
@@ -1265,13 +1271,13 @@ function showM10StreetStores(m,st){
 function renderM10(){
   const PD=PAYLOAD.plandata;
   if(!PD||!PD.markets||PD.markets.length===0){
-    document.getElementById('m10-head').innerHTML='<span style="color:#888">暂无规划数据（需先生成 plan_map_data.json）</span>'+'<a href="https://kmiswilmar9.github.io/dashboard/h2plan/H2_2026_检查线路地图.html" target="_blank" rel="noopener" style="display:inline-block;margin-left:14px;background:#e8973a;color:#fff;font-size:12px;font-weight:bold;padding:5px 14px;border-radius:16px;text-decoration:none;vertical-align:1px;">🗺 门店级规划地图（新版·手机可用）</a>';
+    document.getElementById('m10-head').innerHTML='<span style="color:#888">暂无规划数据（需先生成 plan_map_data.json）</span>'+'<a href="https://factory-dashboard-5e9.pages.dev/dashboard/h2plan/H2_2026_检查线路地图.html" target="_blank" rel="noopener" style="display:inline-block;margin-left:14px;background:#e8973a;color:#fff;font-size:12px;font-weight:bold;padding:5px 14px;border-radius:16px;text-decoration:none;vertical-align:1px;">🗺 门店级规划地图（新版·手机可用）</a>';
     return;
   }
   const withCoord=PD.markets.filter(m=>m.lng!=null&&m.lat!=null);
   document.getElementById('m10-head').innerHTML='<b style="color:#1a3a6b;font-size:15px;">目标市场规划线路</b>'
     +' <span style="font-size:12px;color:#888;margin-left:12px;">数据源：'+PD.source+' ｜ 共 '+PD.total+' 个目标市场 · 已定位 '+withCoord.length+' 个</span>'
-    +'<a href="https://kmiswilmar9.github.io/dashboard/h2plan/H2_2026_检查线路地图.html" target="_blank" rel="noopener" style="display:inline-block;margin-left:14px;background:#e8973a;color:#fff;font-size:12px;font-weight:bold;padding:5px 14px;border-radius:16px;text-decoration:none;vertical-align:1px;">🗺 门店级规划地图（新版·手机可用）</a>';
+    +'<a href="https://factory-dashboard-5e9.pages.dev/dashboard/h2plan/H2_2026_检查线路地图.html" target="_blank" rel="noopener" style="display:inline-block;margin-left:14px;background:#e8973a;color:#fff;font-size:12px;font-weight:bold;padding:5px 14px;border-radius:16px;text-decoration:none;vertical-align:1px;">🗺 门店级规划地图（新版·手机可用）</a>';
   document.getElementById('m10-panel').style.display='block';
   // 地图初始化
   if(!m10Map){
