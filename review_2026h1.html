@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026上半年复查市场对比分析看板</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:"Microsoft YaHei","Segoe UI",sans-serif; background:#eef1f8; color:#1a1a1a; padding:26px; }
+  .wrap { max-width:1500px; margin:0 auto; }
+  .head { background:linear-gradient(135deg,#21295C,#3C4A8C 60%,#5A6BB5); color:#fff; border-radius:14px; padding:26px 32px; margin-bottom:18px; }
+  .head h1 { font-size:22px; margin-bottom:8px; }
+  .head p { font-size:13px; opacity:.9; }
+  .note { background:#FDF6E3; border:1px solid #EAD9A8; border-left:5px solid #C9A227; border-radius:10px; padding:14px 18px; font-size:12.5px; color:#5a4a1e; line-height:1.8; margin-bottom:18px; }
+  .note b { color:#8a6d1a; }
+  .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px; }
+  .card { background:#fff; border-radius:12px; padding:16px 20px; box-shadow:0 2px 10px rgba(33,41,92,.06); display:flex; align-items:center; gap:16px; border-left:5px solid #21295C; }
+  .card .num { font-size:28px; font-weight:800; color:#21295C; }
+  .card .lbl { font-size:12.5px; color:#666; }
+  .card.t { border-left-color:#2E86AB; } .card.t .num { color:#2E86AB; }
+  .card.g { border-left-color:#1F7A4D; } .card.g .num { color:#1F7A4D; }
+  .grid2 { display:grid; grid-template-columns:1.2fr 1fr; gap:14px; margin-bottom:14px; }
+  .sumgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .sumcard { background:#fff; border-radius:12px; padding:16px 18px; box-shadow:0 2px 10px rgba(33,41,92,.06); }
+  .sumlbl { font-size:13.5px; font-weight:700; color:#21295C; margin-bottom:10px; }
+  .sumrow { display:flex; justify-content:space-between; margin-bottom:8px; }
+  .sumup { color:#1F7A4D; font-weight:700; font-size:13.5px; }
+  .sumdown { color:#C0392B; font-weight:700; font-size:13.5px; }
+  .bar { height:8px; background:#F6D6D6; border-radius:4px; overflow:hidden; margin-bottom:8px; }
+  .bar i { display:block; height:100%; background:#1F7A4D; border-radius:4px; }
+  .sumsub { font-size:11.5px; color:#888; }
+  .panel { background:#fff; border-radius:12px; padding:18px 20px; box-shadow:0 2px 10px rgba(33,41,92,.06); }
+  .panel h2 { font-size:15px; color:#21295C; margin-bottom:12px; border-left:4px solid #1F7A4D; padding-left:10px; }
+  .drow { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
+  .dlab { width:70px; font-size:12px; color:#555; text-align:right; }
+  .dtrack { flex:1; height:16px; background:#f0f2f8; border-radius:8px; overflow:hidden; }
+  .dtrack i { display:block; height:100%; border-radius:8px; }
+  .d9 { background:linear-gradient(90deg,#1F7A4D,#2ea36a); }
+  .d7 { background:linear-gradient(90deg,#57a773,#8fcbaa); }
+  .d4 { background:linear-gradient(90deg,#E0A93E,#f0c97a); }
+  .d0 { background:linear-gradient(90deg,#C0564B,#e0938b); }
+  .dval { width:52px; font-size:12px; font-weight:700; color:#333; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th { background:#21295C; color:#fff; padding:8px 5px; text-align:center; font-weight:600; font-size:11.5px; position:sticky; top:0; z-index:5; }
+  th.g1 { background:#1F7A4D; } th.g2 { background:#2E86AB; } th.g3 { background:#8E5AA8; }
+  td { padding:7px 5px; border-bottom:1px solid #eef0f5; }
+  td.c { text-align:center; }
+  td.mkt { text-align:left; font-weight:600; white-space:nowrap; }
+  tr:nth-child(even) { background:#fafbfe; }
+  tr:hover { background:#eef4ff; }
+  .ind { white-space:nowrap; }
+  .raw { font-size:10.5px; color:#8a90a0; margin-right:4px; }
+  .rawna { color:#bbb; }
+  .d { display:inline-block; min-width:36px; padding:1px 6px; border-radius:9px; font-size:10.5px; font-weight:700; text-align:center; }
+  .d.up { background:#1F7A4D; color:#fff; }
+  .d.down { background:#C0392B; color:#fff; }
+  .d.flat { background:#E8A33D; color:#fff; }
+  .d.na { background:#E8EAF0; color:#999; }
+  .d.hold { background:linear-gradient(135deg,#C9A227,#E0B83E); color:#fff; white-space:nowrap; }
+  .score { display:inline-block; min-width:40px; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:800; }
+  .s9 { background:#1F7A4D; color:#fff; }
+  .s7 { background:#D6EADF; color:#1F7A4D; }
+  .s4 { background:#FCEFC7; color:#B8860B; }
+  .s0 { background:#F6D6D6; color:#C0392B; }
+  .badge { font-size:10px; padding:2px 6px; border-radius:9px; margin-left:5px; font-weight:600; white-space:nowrap; }
+  .b-best { background:#1F7A4D; color:#fff; }
+  .b-good { background:#D6EADF; color:#1F7A4D; }
+  .b-mid { background:#FDF0DC; color:#E08A1E; }
+  .b-bad { background:#F6D6D6; color:#C0392B; }
+  .b-hold { background:#FCEFC7; color:#B8860B; border:1px solid #E0C56A; }
+  .b-nonsink { background:#FDEAEA; color:#C0392B; border:1px solid #E6A8A8; }
+  .b-sinkonly { background:#F0F1F4; color:#6B7280; border:1px solid #C8CCD6; }
+  .tbl-wrap { max-height:660px; overflow:auto; border-radius:8px; }
+  .foot { font-size:11.5px; color:#888; margin-top:12px; line-height:1.7; }
+  .overview { background:linear-gradient(135deg,#F4F7FE 0%,#EDF2FB 100%); border:1px solid #D9E2F5; border-left:5px solid #21295C; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+  .ov-title { font-size:15px; font-weight:800; color:#21295C; margin-bottom:10px; }
+  .ov-title::before { content:"▍"; color:#2E6FDB; margin-right:4px; }
+  .ov-text { font-size:13px; color:#3A4358; line-height:1.9; margin-bottom:14px; }
+  .ov-text b { color:#21295C; }
+  .ov-text .hl { color:#2E6FDB; font-weight:800; font-size:14.5px; }
+  .ov-stats { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; }
+  .ov-stat { background:#fff; border:1px solid #E2E9F7; border-radius:10px; padding:10px 6px; text-align:center; box-shadow:0 1px 3px rgba(33,41,92,.06); }
+  .ov-num { font-size:20px; font-weight:800; color:#21295C; }
+  .ov-lbl { font-size:10.5px; color:#7A84A0; line-height:1.5; margin-top:4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>2026年1-6月 工厂周边标准市场复查对比分析看板（油·米·面）</h1>
+    <p>对比口径：有复查市场（上半年检查≥2次）的末次检查 vs 首次检查 ｜ 产线：小包装油 · 小包装米 · 小包装面粉 ｜ 指标：铺市率 · 平均SKU · 陈列占比（共9项）</p>
+  </div>
+  <div class="overview">
+    <div class="ov-title">工厂周边市场情况简述</div>
+    <p class="ov-text">2026年，工厂周边<b>渠道下沉市场</b>共 <span class="hl">576</span> 个，其中纳入全年检查规划的<b>目标检查市场</b>为 <span class="hl">162</span> 个（市场检查覆盖率 28.1%）。上半年累计开展检查的市场达 <span class="hl">154</span> 个，其中目标市场 <span class="hl">142</span> 个（目标市场覆盖率 87.7%）、超目标市场 12 个。在已检查市场中，有 <span class="hl">73</span> 个市场开展复查（检查≥2次），复查率 47.4%，占目标检查市场的 45.1%。</p>
+    <div class="ov-stats">
+      <div class="ov-stat"><div class="ov-num">576</div><div class="ov-lbl">渠道下沉市场数<br>（全年）</div></div>
+      <div class="ov-stat"><div class="ov-num">162</div><div class="ov-lbl">目标检查市场数<br>（纳入2026检查）</div></div>
+      <div class="ov-stat"><div class="ov-num">28.1%</div><div class="ov-lbl">市场检查覆盖率<br>（目标/下沉）</div></div>
+      <div class="ov-stat"><div class="ov-num">154</div><div class="ov-lbl">上半年已检查市场<br>（目标142+超目标12）</div></div>
+      <div class="ov-stat"><div class="ov-num">87.7%</div><div class="ov-lbl">目标市场覆盖率<br>（上半年）</div></div>
+      <div class="ov-stat"><div class="ov-num">73</div><div class="ov-lbl">复查市场数<br>（检查≥2次）</div></div>
+      <div class="ov-stat"><div class="ov-num">47.4%</div><div class="ov-lbl">复查率<br>（占已检查市场）</div></div>
+    </div>
+  </div>
+  <div class="note"><b>排名原则：</b>① 优先按「铺市率上升数」排序；② 其次按「SKU上升数」；③ 再按「陈列占比上升数」。<b style="color:#B8860B">【视为上升规则】</b>铺市率、陈列占比均为百分比指标，<b>100%即达上限</b>——某产线首末均维持100%满分（客观上已无法再升），<b>视同该产线上升</b>，以★标注。故某指标三线「上升或维持100%满分」即视为该指标<b>全上升</b>（如油100%保持+米面上升=铺市率全上升）。<b>上升指标总数</b>=三项上升数之和（含视为上升，满分9），<b>9项全升为最优市场</b>。图例：▲绿=上升 ▼红=下降 <b style="color:#E8A33D">—黄=持平</b> <b style="color:#B8860B">★金=维持100%满分（视为上升）</b>。单元格内「首→末」为首次/末次检查原始值（铺市率/陈列占比带%）。</div>
+  <div class="cards">
+    <div class="card"><div class="num">154</div><div class="lbl">1-6月累计检查<br>工厂周边标准市场（个）</div></div>
+    <div class="card t"><div class="num">73</div><div class="lbl">有复查市场（检查≥2次）<br>有效对比 73 个</div></div>
+    <div class="card g"><div class="num">2</div><div class="lbl">9项指标全上升<br>（最优市场，个）</div></div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h2>上升指标总数分布（满分9项）</h2>
+      <div class="drow"><span class="dlab">9项上升</span><div class="dtrack"><i class="d9" style="width:13%"></i></div><span class="dval">2 个</span></div><div class="drow"><span class="dlab">8项上升</span><div class="dtrack"><i class="d7" style="width:13%"></i></div><span class="dval">2 个</span></div><div class="drow"><span class="dlab">7项上升</span><div class="dtrack"><i class="d7" style="width:47%"></i></div><span class="dval">7 个</span></div><div class="drow"><span class="dlab">6项上升</span><div class="dtrack"><i class="d4" style="width:100%"></i></div><span class="dval">15 个</span></div><div class="drow"><span class="dlab">5项上升</span><div class="dtrack"><i class="d4" style="width:93%"></i></div><span class="dval">14 个</span></div><div class="drow"><span class="dlab">4项上升</span><div class="dtrack"><i class="d4" style="width:53%"></i></div><span class="dval">8 个</span></div><div class="drow"><span class="dlab">3项上升</span><div class="dtrack"><i class="d0" style="width:93%"></i></div><span class="dval">14 个</span></div><div class="drow"><span class="dlab">2项上升</span><div class="dtrack"><i class="d0" style="width:40%"></i></div><span class="dval">6 个</span></div><div class="drow"><span class="dlab">1项上升</span><div class="dtrack"><i class="d0" style="width:27%"></i></div><span class="dval">4 个</span></div><div class="drow"><span class="dlab">0项上升</span><div class="dtrack"><i class="d0" style="width:7%"></i></div><span class="dval">1 个</span></div>
+    </div>
+    <div class="sumgrid">
+        <div class="sumcard">
+          <div class="sumlbl">油米面铺市率</div>
+          <div class="sumrow"><span class="sumup">▲ 全升 19 个</span><span class="sumdown">▼ 全降 10 个</span></div>
+          <div class="bar"><i style="width:26%"></i></div>
+          <div class="sumsub">全升 26.0% ｜ 全降 13.7%</div>
+        </div>
+        <div class="sumcard">
+          <div class="sumlbl">油米面平均SKU</div>
+          <div class="sumrow"><span class="sumup">▲ 全升 24 个</span><span class="sumdown">▼ 全降 13 个</span></div>
+          <div class="bar"><i style="width:33%"></i></div>
+          <div class="sumsub">全升 32.9% ｜ 全降 17.8%</div>
+        </div>
+        <div class="sumcard">
+          <div class="sumlbl">油米面陈列占比</div>
+          <div class="sumrow"><span class="sumup">▲ 全升 10 个</span><span class="sumdown">▼ 全降 25 个</span></div>
+          <div class="bar"><i style="width:14%"></i></div>
+          <div class="sumsub">全升 13.7% ｜ 全降 34.2%</div>
+        </div>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>复查市场明细（按 铺市率上升数 → SKU上升数 → 陈列占比上升数 排序，百分比指标维持100%视为上升）</h2>
+    <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>排名</th><th>标准市场</th><th>分公司</th><th>营业所</th><th>首次→末次</th>
+          <th>上升指标<br>总数</th><th>铺市率<br>上升数</th><th>SKU<br>上升数</th><th>陈列<br>上升数</th>
+          <th class="g1">铺市率·油</th><th class="g1">铺市率·米</th><th class="g1">铺市率·面</th>
+          <th class="g2">SKU·油</th><th class="g2">SKU·米</th><th class="g2">SKU·面</th>
+          <th class="g3">陈列·油</th><th class="g3">陈列·米</th><th class="g3">陈列·面</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="c">1</td>
+          <td class="mkt">广阳区  <span class="badge b-best">9项全升</span></td>
+          <td class="c">天津分</td>
+          <td class="c">廊坊营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s9">9/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">3/3</td>
+          <td class="c ind"><span class="raw">89.3%→98.4%</span><span class="d up">▲9.1</span></td><td class="c ind"><span class="raw">19.6%→48.3%</span><span class="d up">▲28.7</span></td><td class="c ind"><span class="raw">19.6%→39.0%</span><span class="d up">▲19.3</span></td><td class="c ind"><span class="raw">5.02→8.18</span><span class="d up">▲3.16</span></td><td class="c ind"><span class="raw">1.64→3.66</span><span class="d up">▲2.02</span></td><td class="c ind"><span class="raw">2.0→3.87</span><span class="d up">▲1.87</span></td><td class="c ind"><span class="raw">48.8%→64.0%</span><span class="d up">▲15.2</span></td><td class="c ind"><span class="raw">31.2%→52.0%</span><span class="d up">▲20.8</span></td><td class="c ind"><span class="raw">32.7%→54.7%</span><span class="d up">▲22.0</span></td>
+        </tr>
+        <tr>
+          <td class="c">2</td>
+          <td class="mkt">霸州市  <span class="badge b-best">9项全升</span></td>
+          <td class="c">天津分</td>
+          <td class="c">廊坊营业所</td>
+          <td class="c">202604→202606</td>
+          <td class="c"><span class="score s9">9/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">3/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">85.0%→92.3%</span><span class="d up">▲7.3</span></td><td class="c ind"><span class="raw">75.0%→87.2%</span><span class="d up">▲12.2</span></td><td class="c ind"><span class="raw">14.73→16.07</span><span class="d up">▲1.34</span></td><td class="c ind"><span class="raw">3.21→3.61</span><span class="d up">▲0.4</span></td><td class="c ind"><span class="raw">2.97→3.71</span><span class="d up">▲0.74</span></td><td class="c ind"><span class="raw">51.0%→53.8%</span><span class="d up">▲2.8</span></td><td class="c ind"><span class="raw">25.9%→35.9%</span><span class="d up">▲10.0</span></td><td class="c ind"><span class="raw">22.7%→34.5%</span><span class="d up">▲11.9</span></td>
+        </tr>
+        <tr>
+          <td class="c">3</td>
+          <td class="mkt">临平城区  <span class="badge b-good">铺市+SKU全升</span></td>
+          <td class="c">浙江分</td>
+          <td class="c">杭州营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s7">8/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">97.5%→97.6%</span><span class="d up">▲0.1</span></td><td class="c ind"><span class="raw">27.8%→31.7%</span><span class="d up">▲3.9</span></td><td class="c ind"><span class="raw">13.9%→29.3%</span><span class="d up">▲15.4</span></td><td class="c ind"><span class="raw">9.03→9.68</span><span class="d up">▲0.65</span></td><td class="c ind"><span class="raw">4.4→6.92</span><span class="d up">▲2.52</span></td><td class="c ind"><span class="raw">3.6→5.67</span><span class="d up">▲2.07</span></td><td class="c ind"><span class="raw">54.2%→58.6%</span><span class="d up">▲4.3</span></td><td class="c ind"><span class="raw">23.9%→33.7%</span><span class="d up">▲9.8</span></td><td class="c ind"><span class="raw">63.1%→37.8%</span><span class="d down">▼-25.3</span></td>
+        </tr>
+        <tr>
+          <td class="c">4</td>
+          <td class="mkt">饶平县级  <span class="badge b-good">铺市+SKU全升</span></td>
+          <td class="c">厦门分</td>
+          <td class="c">潮州营业所</td>
+          <td class="c">202602→202606</td>
+          <td class="c"><span class="score s7">8/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">98.0%→100.0%</span><span class="d up">▲2.0</span></td><td class="c ind"><span class="raw">21.4%→38.5%</span><span class="d up">▲17.0</span></td><td class="c ind"><span class="raw">70.4%→83.3%</span><span class="d up">▲13.0</span></td><td class="c ind"><span class="raw">5.52→8.4</span><span class="d up">▲2.88</span></td><td class="c ind"><span class="raw">2.22→5.0</span><span class="d up">▲2.78</span></td><td class="c ind"><span class="raw">2.21→3.3</span><span class="d up">▲1.09</span></td><td class="c ind"><span class="raw">47.6%→50.4%</span><span class="d up">▲2.9</span></td><td class="c ind"><span class="raw">35.0%→38.3%</span><span class="d up">▲3.3</span></td><td class="c ind"><span class="raw">71.0%→46.7%</span><span class="d down">▼-24.2</span></td>
+        </tr>
+        <tr>
+          <td class="c">5</td>
+          <td class="mkt">德州城区  <span class="badge b-good">铺市+SKU全升</span></td>
+          <td class="c">济南/青岛分</td>
+          <td class="c">德州营业所</td>
+          <td class="c">202603→202606</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">93.0%→96.7%</span><span class="d up">▲3.7</span></td><td class="c ind"><span class="raw">47.9%→52.2%</span><span class="d up">▲4.3</span></td><td class="c ind"><span class="raw">54.0%→57.7%</span><span class="d up">▲3.7</span></td><td class="c ind"><span class="raw">10.36→13.07</span><span class="d up">▲2.71</span></td><td class="c ind"><span class="raw">2.39→3.5</span><span class="d up">▲1.11</span></td><td class="c ind"><span class="raw">3.37→3.8</span><span class="d up">▲0.43</span></td><td class="c ind"><span class="raw">50.8%→31.1%</span><span class="d down">▼-19.7</span></td><td class="c ind"><span class="raw">32.6%→30.5%</span><span class="d down">▼-2.1</span></td><td class="c ind"><span class="raw">42.7%→21.1%</span><span class="d down">▼-21.5</span></td>
+        </tr>
+        <tr>
+          <td class="c">6</td>
+          <td class="mkt">管城回族区城区  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">郑州分</td>
+          <td class="c">郑州市区营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s7">7/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">97.2%→97.3%</span><span class="d up">▲0.1</span></td><td class="c ind"><span class="raw">38.7%→50.0%</span><span class="d up">▲11.3</span></td><td class="c ind"><span class="raw">54.2%→59.4%</span><span class="d up">▲5.1</span></td><td class="c ind"><span class="raw">8.07→7.92</span><span class="d down">▼-0.15</span></td><td class="c ind"><span class="raw">2.38→3.19</span><span class="d up">▲0.81</span></td><td class="c ind"><span class="raw">2.59→2.63</span><span class="d up">▲0.04</span></td><td class="c ind"><span class="raw">74.8%→74.7%</span><span class="d down">▼-0.1</span></td><td class="c ind"><span class="raw">38.5%→53.2%</span><span class="d up">▲14.7</span></td><td class="c ind"><span class="raw">45.0%→52.8%</span><span class="d up">▲7.8</span></td>
+        </tr>
+        <tr>
+          <td class="c">7</td>
+          <td class="mkt">茂南区  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">广州分</td>
+          <td class="c">茂名营业所</td>
+          <td class="c">202603→202606</td>
+          <td class="c"><span class="score s7">7/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">92.3%→98.4%</span><span class="d up">▲6.1</span></td><td class="c ind"><span class="raw">43.6%→50.0%</span><span class="d up">▲6.4</span></td><td class="c ind"><span class="raw">38.5%→43.8%</span><span class="d up">▲5.3</span></td><td class="c ind"><span class="raw">7.03→12.3</span><span class="d up">▲5.27</span></td><td class="c ind"><span class="raw">8.53→9.19</span><span class="d up">▲0.66</span></td><td class="c ind"><span class="raw">5.8→5.64</span><span class="d down">▼-0.16</span></td><td class="c ind"><span class="raw">47.2%→52.2%</span><span class="d up">▲5.0</span></td><td class="c ind"><span class="raw">26.6%→35.2%</span><span class="d up">▲8.6</span></td><td class="c ind"><span class="raw">62.7%→59.3%</span><span class="d down">▼-3.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">8</td>
+          <td class="mkt">泉港县级  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">厦门分</td>
+          <td class="c">泉州营业所</td>
+          <td class="c">202602→202604</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">44.2%→52.4%</span><span class="d up">▲8.2</span></td><td class="c ind"><span class="raw">48.3%→68.2%</span><span class="d up">▲19.9</span></td><td class="c ind"><span class="raw">10.91→11.8</span><span class="d up">▲0.89</span></td><td class="c ind"><span class="raw">9.79→9.32</span><span class="d down">▼-0.47</span></td><td class="c ind"><span class="raw">2.14→2.33</span><span class="d up">▲0.19</span></td><td class="c ind"><span class="raw">63.5%→58.8%</span><span class="d down">▼-4.7</span></td><td class="c ind"><span class="raw">52.9%→58.0%</span><span class="d up">▲5.1</span></td><td class="c ind"><span class="raw">58.9%→56.2%</span><span class="d down">▼-2.7</span></td>
+        </tr>
+        <tr>
+          <td class="c">9</td>
+          <td class="mkt">泰州市兴化市县级 <span class="badge b-sinkonly">非今年计划</span> <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">南京分</td>
+          <td class="c">泰州营业所</td>
+          <td class="c">202604→202606</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">92.3%→93.8%</span><span class="d up">▲1.4</span></td><td class="c ind"><span class="raw">29.0%→32.0%</span><span class="d up">▲3.0</span></td><td class="c ind"><span class="raw">30.4%→33.3%</span><span class="d up">▲2.9</span></td><td class="c ind"><span class="raw">9.42→8.77</span><span class="d down">▼-0.65</span></td><td class="c ind"><span class="raw">3.89→4.38</span><span class="d up">▲0.48</span></td><td class="c ind"><span class="raw">2.29→3.0</span><span class="d up">▲0.71</span></td><td class="c ind"><span class="raw">60.4%→47.8%</span><span class="d down">▼-12.6</span></td><td class="c ind"><span class="raw">17.8%→20.9%</span><span class="d up">▲3.1</span></td><td class="c ind"><span class="raw">25.7%→21.8%</span><span class="d down">▼-3.9</span></td>
+        </tr>
+        <tr>
+          <td class="c">10</td>
+          <td class="mkt">肥西县级  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">安徽分</td>
+          <td class="c">合肥营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">98.1%→100.0%</span><span class="d up">▲1.9</span></td><td class="c ind"><span class="raw">42.9%→57.5%</span><span class="d up">▲14.6</span></td><td class="c ind"><span class="raw">59.1%→60.5%</span><span class="d up">▲1.4</span></td><td class="c ind"><span class="raw">16.73→20.08</span><span class="d up">▲3.34</span></td><td class="c ind"><span class="raw">8.14→7.65</span><span class="d down">▼-0.49</span></td><td class="c ind"><span class="raw">5.42→5.52</span><span class="d up">▲0.1</span></td><td class="c ind"><span class="raw">63.3%→66.7%</span><span class="d up">▲3.4</span></td><td class="c ind"><span class="raw">42.8%→27.3%</span><span class="d down">▼-15.5</span></td><td class="c ind"><span class="raw">36.4%→24.8%</span><span class="d down">▼-11.6</span></td>
+        </tr>
+        <tr>
+          <td class="c">11</td>
+          <td class="mkt">芜湖镜湖区城区  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">安徽分</td>
+          <td class="c">芜湖营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">44.7%→64.3%</span><span class="d up">▲19.5</span></td><td class="c ind"><span class="raw">78.8%→90.6%</span><span class="d up">▲11.8</span></td><td class="c ind"><span class="raw">9.58→9.31</span><span class="d down">▼-0.27</span></td><td class="c ind"><span class="raw">4.53→4.89</span><span class="d up">▲0.36</span></td><td class="c ind"><span class="raw">2.54→2.66</span><span class="d up">▲0.12</span></td><td class="c ind"><span class="raw">55.3%→61.3%</span><span class="d up">▲6.0</span></td><td class="c ind"><span class="raw">38.4%→34.6%</span><span class="d down">▼-3.8</span></td><td class="c ind"><span class="raw">58.0%→52.1%</span><span class="d down">▼-6.0</span></td>
+        </tr>
+        <tr>
+          <td class="c">12</td>
+          <td class="mkt">伊宁城区 <span class="badge b-nonsink">非下沉市场</span> <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">乌鲁木齐分</td>
+          <td class="c">伊犁营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s7">7/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">3/3</td>
+          <td class="c ind"><span class="raw">75.7%→82.1%</span><span class="d up">▲6.4</span></td><td class="c ind"><span class="raw">37.8%→62.5%</span><span class="d up">▲24.7</span></td><td class="c ind"><span class="raw">0.0%→6.1%</span><span class="d up">▲6.1</span></td><td class="c ind"><span class="raw">12.21→7.69</span><span class="d down">▼-4.52</span></td><td class="c ind"><span class="raw">8.0→3.2</span><span class="d down">▼-4.8</span></td><td class="c ind"><span class="raw">0.0→1.0</span><span class="d up">▲1.0</span></td><td class="c ind"><span class="raw">34.1%→38.4%</span><span class="d up">▲4.3</span></td><td class="c ind"><span class="raw">21.6%→32.3%</span><span class="d up">▲10.7</span></td><td class="c ind"><span class="raw">0.0%→46.2%</span><span class="d up">▲46.2</span></td>
+        </tr>
+        <tr>
+          <td class="c">13</td>
+          <td class="mkt">新建区  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">南昌分</td>
+          <td class="c">南昌营业所</td>
+          <td class="c">202601→202605</td>
+          <td class="c"><span class="score s7">7/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">3/3</td>
+          <td class="c ind"><span class="raw">87.8%→97.1%</span><span class="d up">▲9.3</span></td><td class="c ind"><span class="raw">35.0%→41.7%</span><span class="d up">▲6.7</span></td><td class="c ind"><span class="raw">38.1%→53.8%</span><span class="d up">▲15.7</span></td><td class="c ind"><span class="raw">6.21→5.94</span><span class="d down">▼-0.27</span></td><td class="c ind"><span class="raw">2.79→6.2</span><span class="d up">▲3.41</span></td><td class="c ind"><span class="raw">1.75→1.71</span><span class="d down">▼-0.04</span></td><td class="c ind"><span class="raw">39.1%→44.3%</span><span class="d up">▲5.3</span></td><td class="c ind"><span class="raw">21.9%→29.9%</span><span class="d up">▲8.0</span></td><td class="c ind"><span class="raw">36.2%→45.6%</span><span class="d up">▲9.3</span></td>
+        </tr>
+        <tr>
+          <td class="c">14</td>
+          <td class="mkt">丰泽城区  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">厦门分</td>
+          <td class="c">泉州营业所</td>
+          <td class="c">202601→202605</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">30.0%→33.3%</span><span class="d up">▲3.3</span></td><td class="c ind"><span class="raw">59.3%→66.7%</span><span class="d up">▲7.4</span></td><td class="c ind"><span class="raw">12.3→10.85</span><span class="d down">▼-1.45</span></td><td class="c ind"><span class="raw">9.0→7.0</span><span class="d down">▼-2.0</span></td><td class="c ind"><span class="raw">1.88→1.9</span><span class="d up">▲0.02</span></td><td class="c ind"><span class="raw">56.9%→67.8%</span><span class="d up">▲10.9</span></td><td class="c ind"><span class="raw">49.6%→45.2%</span><span class="d down">▼-4.4</span></td><td class="c ind"><span class="raw">50.6%→79.4%</span><span class="d up">▲28.8</span></td>
+        </tr>
+        <tr>
+          <td class="c">15</td>
+          <td class="mkt">苏州市昆山市县级  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">南京分</td>
+          <td class="c">苏州一所</td>
+          <td class="c">202601→202603</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">89.5%→91.9%</span><span class="d up">▲2.4</span></td><td class="c ind"><span class="raw">41.9%→48.4%</span><span class="d up">▲6.4</span></td><td class="c ind"><span class="raw">43.3%→61.5%</span><span class="d up">▲18.2</span></td><td class="c ind"><span class="raw">16.32→15.74</span><span class="d down">▼-0.58</span></td><td class="c ind"><span class="raw">6.31→6.0</span><span class="d down">▼-0.31</span></td><td class="c ind"><span class="raw">5.15→5.5</span><span class="d up">▲0.35</span></td><td class="c ind"><span class="raw">69.0%→66.0%</span><span class="d down">▼-3.0</span></td><td class="c ind"><span class="raw">18.9%→21.7%</span><span class="d up">▲2.8</span></td><td class="c ind"><span class="raw">29.0%→27.6%</span><span class="d down">▼-1.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">16</td>
+          <td class="mkt">西山区城区  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">昆明分</td>
+          <td class="c">昆明营业所</td>
+          <td class="c">202603→202606</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">97.5%→100.0%</span><span class="d up">▲2.5</span></td><td class="c ind"><span class="raw">32.0%→41.4%</span><span class="d up">▲9.4</span></td><td class="c ind"><span class="raw">41.7%→47.4%</span><span class="d up">▲5.7</span></td><td class="c ind"><span class="raw">14.74→14.95</span><span class="d up">▲0.21</span></td><td class="c ind"><span class="raw">5.5→4.83</span><span class="d down">▼-0.67</span></td><td class="c ind"><span class="raw">3.6→2.44</span><span class="d down">▼-1.16</span></td><td class="c ind"><span class="raw">63.5%→61.3%</span><span class="d down">▼-2.2</span></td><td class="c ind"><span class="raw">35.8%→26.8%</span><span class="d down">▼-9.0</span></td><td class="c ind"><span class="raw">22.0%→22.3%</span><span class="d up">▲0.3</span></td>
+        </tr>
+        <tr>
+          <td class="c">17</td>
+          <td class="mkt">乌兰浩特城区 <span class="badge b-nonsink">非下沉市场</span> <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">长春分</td>
+          <td class="c">白城营业所（乌兰浩特）</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">89.7%→93.3%</span><span class="d up">▲3.6</span></td><td class="c ind"><span class="raw">36.4%→38.9%</span><span class="d up">▲2.5</span></td><td class="c ind"><span class="raw">39.4%→48.7%</span><span class="d up">▲9.3</span></td><td class="c ind"><span class="raw">9.14→8.52</span><span class="d down">▼-0.62</span></td><td class="c ind"><span class="raw">1.75→1.36</span><span class="d down">▼-0.39</span></td><td class="c ind"><span class="raw">3.15→2.89</span><span class="d down">▼-0.26</span></td><td class="c ind"><span class="raw">44.7%→37.7%</span><span class="d down">▼-7.0</span></td><td class="c ind"><span class="raw">27.1%→16.5%</span><span class="d down">▼-10.5</span></td><td class="c ind"><span class="raw">39.7%→28.6%</span><span class="d down">▼-11.1</span></td>
+        </tr>
+        <tr>
+          <td class="c">18</td>
+          <td class="mkt">浦东城区  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">上海分</td>
+          <td class="c">上海一所</td>
+          <td class="c">202602→202606</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">93.9%→94.7%</span><span class="d up">▲0.8</span></td><td class="c ind"><span class="raw">12.1%→31.2%</span><span class="d up">▲19.1</span></td><td class="c ind"><span class="raw">15.2%→56.7%</span><span class="d up">▲41.5</span></td><td class="c ind"><span class="raw">13.29→9.94</span><span class="d down">▼-3.35</span></td><td class="c ind"><span class="raw">6.5→1.1</span><span class="d down">▼-5.4</span></td><td class="c ind"><span class="raw">6.6→2.0</span><span class="d down">▼-4.6</span></td><td class="c ind"><span class="raw">67.1%→59.9%</span><span class="d down">▼-7.2</span></td><td class="c ind"><span class="raw">52.5%→9.6%</span><span class="d down">▼-42.9</span></td><td class="c ind"><span class="raw">70.0%→20.1%</span><span class="d down">▼-49.9</span></td>
+        </tr>
+        <tr>
+          <td class="c">19</td>
+          <td class="mkt">连云港市区  <span class="badge b-mid">铺市率全升</span></td>
+          <td class="c">徐州分</td>
+          <td class="c">连云港营业所</td>
+          <td class="c">202602→202606</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>3</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">92.5%→92.9%</span><span class="d up">▲0.4</span></td><td class="c ind"><span class="raw">77.1%→77.1%</span><span class="d up">▲0.0</span></td><td class="c ind"><span class="raw">57.1%→71.4%</span><span class="d up">▲14.3</span></td><td class="c ind"><span class="raw">15.59→10.72</span><span class="d down">▼-4.87</span></td><td class="c ind"><span class="raw">4.93→4.3</span><span class="d down">▼-0.63</span></td><td class="c ind"><span class="raw">4.6→3.36</span><span class="d down">▼-1.24</span></td><td class="c ind"><span class="raw">60.2%→38.8%</span><span class="d down">▼-21.4</span></td><td class="c ind"><span class="raw">55.6%→39.7%</span><span class="d down">▼-15.9</span></td><td class="c ind"><span class="raw">46.6%→37.4%</span><span class="d down">▼-9.2</span></td>
+        </tr>
+        <tr>
+          <td class="c">20</td>
+          <td class="mkt">汤阴县县级  </td>
+          <td class="c">郑州分</td>
+          <td class="c">安阳营业所</td>
+          <td class="c">202602→202604</td>
+          <td class="c"><span class="score s7">7/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">88.9%→88.9%</span><span class="d flat">—0</span></td><td class="c ind"><span class="raw">41.7%→45.8%</span><span class="d up">▲4.2</span></td><td class="c ind"><span class="raw">16.7%→52.6%</span><span class="d up">▲36.0</span></td><td class="c ind"><span class="raw">5.5→6.21</span><span class="d up">▲0.71</span></td><td class="c ind"><span class="raw">2.4→2.45</span><span class="d up">▲0.05</span></td><td class="c ind"><span class="raw">2.25→3.2</span><span class="d up">▲0.95</span></td><td class="c ind"><span class="raw">61.6%→51.9%</span><span class="d down">▼-9.7</span></td><td class="c ind"><span class="raw">38.1%→43.2%</span><span class="d up">▲5.1</span></td><td class="c ind"><span class="raw">26.2%→60.5%</span><span class="d up">▲34.2</span></td>
+        </tr>
+        <tr>
+          <td class="c">21</td>
+          <td class="mkt">南昌县  </td>
+          <td class="c">南昌分</td>
+          <td class="c">南昌营业所</td>
+          <td class="c">202602→202603</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">88.9%→92.0%</span><span class="d up">▲3.1</span></td><td class="c ind"><span class="raw">23.3%→35.3%</span><span class="d up">▲12.0</span></td><td class="c ind"><span class="raw">26.3%→20.0%</span><span class="d down">▼-6.3</span></td><td class="c ind"><span class="raw">5.56→6.83</span><span class="d up">▲1.27</span></td><td class="c ind"><span class="raw">4.86→5.17</span><span class="d up">▲0.31</span></td><td class="c ind"><span class="raw">1.4→1.67</span><span class="d up">▲0.27</span></td><td class="c ind"><span class="raw">28.9%→24.1%</span><span class="d down">▼-4.8</span></td><td class="c ind"><span class="raw">32.9%→17.5%</span><span class="d down">▼-15.4</span></td><td class="c ind"><span class="raw">26.0%→46.7%</span><span class="d up">▲20.7</span></td>
+        </tr>
+        <tr>
+          <td class="c">22</td>
+          <td class="mkt">泰州市高港区城区  </td>
+          <td class="c">南京分</td>
+          <td class="c">泰州营业所</td>
+          <td class="c">202603→202605</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">100.0%→96.8%</span><span class="d down">▼-3.2</span></td><td class="c ind"><span class="raw">45.2%→66.7%</span><span class="d up">▲21.5</span></td><td class="c ind"><span class="raw">44.8%→72.2%</span><span class="d up">▲27.4</span></td><td class="c ind"><span class="raw">9.63→12.77</span><span class="d up">▲3.14</span></td><td class="c ind"><span class="raw">3.64→4.11</span><span class="d up">▲0.47</span></td><td class="c ind"><span class="raw">2.31→2.92</span><span class="d up">▲0.61</span></td><td class="c ind"><span class="raw">72.7%→73.6%</span><span class="d up">▲0.9</span></td><td class="c ind"><span class="raw">44.7%→33.7%</span><span class="d down">▼-11.0</span></td><td class="c ind"><span class="raw">58.1%→37.6%</span><span class="d down">▼-20.5</span></td>
+        </tr>
+        <tr>
+          <td class="c">23</td>
+          <td class="mkt">苏州市张家港市县级  </td>
+          <td class="c">南京分</td>
+          <td class="c">苏州二所（张家港）</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">100.0%→97.6%</span><span class="d down">▼-2.4</span></td><td class="c ind"><span class="raw">18.2%→57.7%</span><span class="d up">▲39.5</span></td><td class="c ind"><span class="raw">27.3%→65.0%</span><span class="d up">▲37.7</span></td><td class="c ind"><span class="raw">9.42→10.75</span><span class="d up">▲1.33</span></td><td class="c ind"><span class="raw">3.83→4.67</span><span class="d up">▲0.84</span></td><td class="c ind"><span class="raw">2.67→3.77</span><span class="d up">▲1.1</span></td><td class="c ind"><span class="raw">60.7%→61.8%</span><span class="d up">▲1.1</span></td><td class="c ind"><span class="raw">26.7%→24.0%</span><span class="d down">▼-2.6</span></td><td class="c ind"><span class="raw">39.5%→32.9%</span><span class="d down">▼-6.6</span></td>
+        </tr>
+        <tr>
+          <td class="c">24</td>
+          <td class="mkt">密山  </td>
+          <td class="c">哈尔滨分</td>
+          <td class="c">牡丹江营业所</td>
+          <td class="c">202602→202606</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">97.3%→87.5%</span><span class="d down">▼-9.8</span></td><td class="c ind"><span class="raw">24.3%→37.5%</span><span class="d up">▲13.2</span></td><td class="c ind"><span class="raw">13.5%→42.5%</span><span class="d up">▲29.0</span></td><td class="c ind"><span class="raw">5.39→16.03</span><span class="d up">▲10.64</span></td><td class="c ind"><span class="raw">1.78→5.73</span><span class="d up">▲3.95</span></td><td class="c ind"><span class="raw">2.4→5.41</span><span class="d up">▲3.01</span></td><td class="c ind"><span class="raw">38.4%→29.5%</span><span class="d down">▼-8.9</span></td><td class="c ind"><span class="raw">35.7%→30.4%</span><span class="d down">▼-5.3</span></td><td class="c ind"><span class="raw">16.7%→15.1%</span><span class="d down">▼-1.6</span></td>
+        </tr>
+        <tr>
+          <td class="c">25</td>
+          <td class="mkt">江津区县级  </td>
+          <td class="c">重庆分</td>
+          <td class="c">渝西营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">98.0%→90.5%</span><span class="d down">▼-7.5</span></td><td class="c ind"><span class="raw">62.5%→73.7%</span><span class="d up">▲11.2</span></td><td class="c ind"><span class="raw">73.7%→76.7%</span><span class="d up">▲3.0</span></td><td class="c ind"><span class="raw">9.6→11.92</span><span class="d up">▲2.32</span></td><td class="c ind"><span class="raw">4.03→4.86</span><span class="d up">▲0.83</span></td><td class="c ind"><span class="raw">3.36→3.61</span><span class="d up">▲0.25</span></td><td class="c ind"><span class="raw">62.9%→50.7%</span><span class="d down">▼-12.2</span></td><td class="c ind"><span class="raw">42.2%→34.4%</span><span class="d down">▼-7.8</span></td><td class="c ind"><span class="raw">89.9%→87.5%</span><span class="d down">▼-2.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">26</td>
+          <td class="mkt">白城城区  </td>
+          <td class="c">长春分</td>
+          <td class="c">白城营业所（白城）</td>
+          <td class="c">202602→202606</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→97.5%</span><span class="d down">▼-2.5</span></td><td class="c ind"><span class="raw">54.8%→93.3%</span><span class="d up">▲38.6</span></td><td class="c ind"><span class="raw">42.9%→61.3%</span><span class="d up">▲18.4</span></td><td class="c ind"><span class="raw">8.31→9.79</span><span class="d up">▲1.48</span></td><td class="c ind"><span class="raw">2.52→2.93</span><span class="d up">▲0.41</span></td><td class="c ind"><span class="raw">2.22→3.63</span><span class="d up">▲1.41</span></td><td class="c ind"><span class="raw">59.3%→41.0%</span><span class="d down">▼-18.3</span></td><td class="c ind"><span class="raw">52.0%→28.1%</span><span class="d down">▼-23.9</span></td><td class="c ind"><span class="raw">39.2%→33.3%</span><span class="d down">▼-5.9</span></td>
+        </tr>
+        <tr>
+          <td class="c">27</td>
+          <td class="mkt">盘山县级  </td>
+          <td class="c">沈阳分</td>
+          <td class="c">盘锦营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">89.5%→95.7%</span><span class="d up">▲6.2</span></td><td class="c ind"><span class="raw">22.9%→29.3%</span><span class="d up">▲6.4</span></td><td class="c ind"><span class="raw">37.1%→36.4%</span><span class="d down">▼-0.8</span></td><td class="c ind"><span class="raw">7.47→8.95</span><span class="d up">▲1.48</span></td><td class="c ind"><span class="raw">2.75→4.25</span><span class="d up">▲1.5</span></td><td class="c ind"><span class="raw">2.85→4.56</span><span class="d up">▲1.71</span></td><td class="c ind"><span class="raw">31.4%→28.2%</span><span class="d down">▼-3.1</span></td><td class="c ind"><span class="raw">28.2%→15.4%</span><span class="d down">▼-12.9</span></td><td class="c ind"><span class="raw">24.8%→16.4%</span><span class="d down">▼-8.5</span></td>
+        </tr>
+        <tr>
+          <td class="c">28</td>
+          <td class="mkt">齐齐哈尔  </td>
+          <td class="c">哈尔滨分</td>
+          <td class="c">黑西营业所</td>
+          <td class="c">202602→202606</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">90.5%→83.3%</span><span class="d down">▼-7.1</span></td><td class="c ind"><span class="raw">26.7%→71.4%</span><span class="d up">▲44.8</span></td><td class="c ind"><span class="raw">52.9%→87.5%</span><span class="d up">▲34.6</span></td><td class="c ind"><span class="raw">4.53→9.1</span><span class="d up">▲4.57</span></td><td class="c ind"><span class="raw">3.75→3.8</span><span class="d up">▲0.05</span></td><td class="c ind"><span class="raw">3.22→5.43</span><span class="d up">▲2.21</span></td><td class="c ind"><span class="raw">53.8%→31.6%</span><span class="d down">▼-22.1</span></td><td class="c ind"><span class="raw">36.9%→25.8%</span><span class="d down">▼-11.2</span></td><td class="c ind"><span class="raw">42.5%→20.3%</span><span class="d down">▼-22.2</span></td>
+        </tr>
+        <tr>
+          <td class="c">29</td>
+          <td class="mkt">开封市龙亭区市区  </td>
+          <td class="c">周口分</td>
+          <td class="c">开封营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s7">7/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">3/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">17.9%→55.0%</span><span class="d up">▲37.1</span></td><td class="c ind"><span class="raw">42.3%→32.5%</span><span class="d down">▼-9.8</span></td><td class="c ind"><span class="raw">9.3→8.98</span><span class="d down">▼-0.32</span></td><td class="c ind"><span class="raw">2.2→2.41</span><span class="d up">▲0.21</span></td><td class="c ind"><span class="raw">1.64→2.31</span><span class="d up">▲0.67</span></td><td class="c ind"><span class="raw">58.2%→58.8%</span><span class="d up">▲0.6</span></td><td class="c ind"><span class="raw">11.6%→25.4%</span><span class="d up">▲13.8</span></td><td class="c ind"><span class="raw">23.8%→40.8%</span><span class="d up">▲17.0</span></td>
+        </tr>
+        <tr>
+          <td class="c">30</td>
+          <td class="mkt">哈尔滨城区道里南岗  </td>
+          <td class="c">哈尔滨分</td>
+          <td class="c">哈尔滨一所营业所</td>
+          <td class="c">202601→202603</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">47.6%→65.7%</span><span class="d up">▲18.1</span></td><td class="c ind"><span class="raw">11.8%→27.3%</span><span class="d up">▲15.5</span></td><td class="c ind"><span class="raw">26.5%→14.7%</span><span class="d down">▼-11.8</span></td><td class="c ind"><span class="raw">3.9→4.0</span><span class="d up">▲0.1</span></td><td class="c ind"><span class="raw">2.25→1.33</span><span class="d down">▼-0.92</span></td><td class="c ind"><span class="raw">2.56→3.4</span><span class="d up">▲0.84</span></td><td class="c ind"><span class="raw">30.0%→38.1%</span><span class="d up">▲8.1</span></td><td class="c ind"><span class="raw">77.7%→60.1%</span><span class="d down">▼-17.6</span></td><td class="c ind"><span class="raw">27.9%→40.6%</span><span class="d up">▲12.7</span></td>
+        </tr>
+        <tr>
+          <td class="c">31</td>
+          <td class="mkt">金水区城区  </td>
+          <td class="c">郑州分</td>
+          <td class="c">郑州市区营业所</td>
+          <td class="c">202603→202604</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">97.3%→97.4%</span><span class="d up">▲0.1</span></td><td class="c ind"><span class="raw">22.6%→21.9%</span><span class="d down">▼-0.7</span></td><td class="c ind"><span class="raw">28.0%→45.2%</span><span class="d up">▲17.2</span></td><td class="c ind"><span class="raw">8.08→10.35</span><span class="d up">▲2.27</span></td><td class="c ind"><span class="raw">1.57→2.0</span><span class="d up">▲0.43</span></td><td class="c ind"><span class="raw">2.14→2.07</span><span class="d down">▼-0.07</span></td><td class="c ind"><span class="raw">76.8%→79.0%</span><span class="d up">▲2.2</span></td><td class="c ind"><span class="raw">35.7%→30.4%</span><span class="d down">▼-5.3</span></td><td class="c ind"><span class="raw">23.1%→33.6%</span><span class="d up">▲10.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">32</td>
+          <td class="mkt">小店区  </td>
+          <td class="c">太原分</td>
+          <td class="c">太原营业所</td>
+          <td class="c">202602→202605</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">98.0%→97.1%</span><span class="d down">▼-0.9</span></td><td class="c ind"><span class="raw">37.2%→48.1%</span><span class="d up">▲10.9</span></td><td class="c ind"><span class="raw">37.5%→70.4%</span><span class="d up">▲32.9</span></td><td class="c ind"><span class="raw">10.78→10.79</span><span class="d up">▲0.01</span></td><td class="c ind"><span class="raw">3.19→3.69</span><span class="d up">▲0.5</span></td><td class="c ind"><span class="raw">5.27→2.74</span><span class="d down">▼-2.53</span></td><td class="c ind"><span class="raw">63.3%→54.3%</span><span class="d down">▼-9.0</span></td><td class="c ind"><span class="raw">35.9%→48.9%</span><span class="d up">▲13.0</span></td><td class="c ind"><span class="raw">48.3%→40.1%</span><span class="d down">▼-8.2</span></td>
+        </tr>
+        <tr>
+          <td class="c">33</td>
+          <td class="mkt">晋宁县级  </td>
+          <td class="c">昆明分</td>
+          <td class="c">昆明营业所</td>
+          <td class="c">202602→202605</td>
+          <td class="c"><span class="score s4">4/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">97.7%→97.5%</span><span class="d down">▼-0.2</span></td><td class="c ind"><span class="raw">21.0%→32.3%</span><span class="d up">▲11.2</span></td><td class="c ind"><span class="raw">54.6%→69.6%</span><span class="d up">▲15.0</span></td><td class="c ind"><span class="raw">17.3→18.15</span><span class="d up">▲0.85</span></td><td class="c ind"><span class="raw">7.63→6.8</span><span class="d down">▼-0.83</span></td><td class="c ind"><span class="raw">4.33→4.88</span><span class="d up">▲0.54</span></td><td class="c ind"><span class="raw">63.4%→51.8%</span><span class="d down">▼-11.6</span></td><td class="c ind"><span class="raw">31.8%→24.7%</span><span class="d down">▼-7.1</span></td><td class="c ind"><span class="raw">51.8%→33.9%</span><span class="d down">▼-18.0</span></td>
+        </tr>
+        <tr>
+          <td class="c">34</td>
+          <td class="mkt">黄岛县级  </td>
+          <td class="c">济南/青岛分</td>
+          <td class="c">青岛营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">4/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→95.7%</span><span class="d down">▼-4.3</span></td><td class="c ind"><span class="raw">15.4%→20.5%</span><span class="d up">▲5.1</span></td><td class="c ind"><span class="raw">10.3%→20.5%</span><span class="d up">▲10.3</span></td><td class="c ind"><span class="raw">8.36→7.84</span><span class="d down">▼-0.52</span></td><td class="c ind"><span class="raw">2.33→12.75</span><span class="d up">▲10.42</span></td><td class="c ind"><span class="raw">1.75→9.88</span><span class="d up">▲8.12</span></td><td class="c ind"><span class="raw">51.9%→41.1%</span><span class="d down">▼-10.8</span></td><td class="c ind"><span class="raw">23.0%→20.5%</span><span class="d down">▼-2.5</span></td><td class="c ind"><span class="raw">33.0%→21.3%</span><span class="d down">▼-11.7</span></td>
+        </tr>
+        <tr>
+          <td class="c">35</td>
+          <td class="mkt">吉安县  </td>
+          <td class="c">南昌分</td>
+          <td class="c">吉安营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">3/3</td>
+          <td class="c ind"><span class="raw">97.4%→100.0%</span><span class="d up">▲2.6</span></td><td class="c ind"><span class="raw">81.5%→61.1%</span><span class="d down">▼-20.4</span></td><td class="c ind"><span class="raw">50.0%→75.0%</span><span class="d up">▲25.0</span></td><td class="c ind"><span class="raw">8.22→9.47</span><span class="d up">▲1.25</span></td><td class="c ind"><span class="raw">5.5→3.27</span><span class="d down">▼-2.23</span></td><td class="c ind"><span class="raw">2.0→1.0</span><span class="d down">▼-1.0</span></td><td class="c ind"><span class="raw">46.4%→54.7%</span><span class="d up">▲8.3</span></td><td class="c ind"><span class="raw">42.3%→56.4%</span><span class="d up">▲14.1</span></td><td class="c ind"><span class="raw">20.0%→76.7%</span><span class="d up">▲56.7</span></td>
+        </tr>
+        <tr>
+          <td class="c">36</td>
+          <td class="mkt">望城区  </td>
+          <td class="c">长沙分</td>
+          <td class="c">长沙营业所</td>
+          <td class="c">202604→202606</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">95.6%→80.8%</span><span class="d down">▼-14.9</span></td><td class="c ind"><span class="raw">45.8%→54.2%</span><span class="d up">▲8.3</span></td><td class="c ind"><span class="raw">25.0%→36.8%</span><span class="d up">▲11.8</span></td><td class="c ind"><span class="raw">9.82→9.33</span><span class="d down">▼-0.49</span></td><td class="c ind"><span class="raw">5.09→6.38</span><span class="d up">▲1.29</span></td><td class="c ind"><span class="raw">3.17→2.57</span><span class="d down">▼-0.6</span></td><td class="c ind"><span class="raw">25.2%→34.8%</span><span class="d up">▲9.5</span></td><td class="c ind"><span class="raw">26.6%→31.6%</span><span class="d up">▲5.1</span></td><td class="c ind"><span class="raw">23.3%→17.6%</span><span class="d down">▼-5.8</span></td>
+        </tr>
+        <tr>
+          <td class="c">37</td>
+          <td class="mkt">大兴县级  </td>
+          <td class="c">北京分</td>
+          <td class="c">TO小B营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">4/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">86.4%→92.5%</span><span class="d up">▲6.1</span></td><td class="c ind"><span class="raw">29.3%→46.9%</span><span class="d up">▲17.6</span></td><td class="c ind"><span class="raw">26.3%→12.5%</span><span class="d down">▼-13.8</span></td><td class="c ind"><span class="raw">9.11→6.68</span><span class="d down">▼-2.43</span></td><td class="c ind"><span class="raw">3.08→2.33</span><span class="d down">▼-0.75</span></td><td class="c ind"><span class="raw">1.5→3.75</span><span class="d up">▲2.25</span></td><td class="c ind"><span class="raw">60.6%→60.9%</span><span class="d up">▲0.3</span></td><td class="c ind"><span class="raw">42.9%→26.7%</span><span class="d down">▼-16.2</span></td><td class="c ind"><span class="raw">27.0%→21.9%</span><span class="d down">▼-5.1</span></td>
+        </tr>
+        <tr>
+          <td class="c">38</td>
+          <td class="mkt">秦皇岛城区  </td>
+          <td class="c">秦皇岛分</td>
+          <td class="c">秦皇岛营业所</td>
+          <td class="c">202602→202606</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">35.7%→31.2%</span><span class="d down">▼-4.5</span></td><td class="c ind"><span class="raw">35.7%→40.6%</span><span class="d up">▲4.9</span></td><td class="c ind"><span class="raw">12.07→12.4</span><span class="d up">▲0.33</span></td><td class="c ind"><span class="raw">3.6→3.1</span><span class="d down">▼-0.5</span></td><td class="c ind"><span class="raw">3.93→3.46</span><span class="d down">▼-0.47</span></td><td class="c ind"><span class="raw">64.0%→61.8%</span><span class="d down">▼-2.2</span></td><td class="c ind"><span class="raw">40.3%→27.0%</span><span class="d down">▼-13.4</span></td><td class="c ind"><span class="raw">32.7%→20.9%</span><span class="d down">▼-11.7</span></td>
+        </tr>
+        <tr>
+          <td class="c">39</td>
+          <td class="mkt">拱墅城区  </td>
+          <td class="c">浙江分</td>
+          <td class="c">杭州营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">3/3</td>
+          <td class="c ind"><span class="raw">97.6%→100.0%</span><span class="d up">▲2.4</span></td><td class="c ind"><span class="raw">24.4%→17.9%</span><span class="d down">▼-6.4</span></td><td class="c ind"><span class="raw">14.6%→19.2%</span><span class="d up">▲4.6</span></td><td class="c ind"><span class="raw">6.18→5.22</span><span class="d down">▼-0.96</span></td><td class="c ind"><span class="raw">2.5→1.57</span><span class="d down">▼-0.93</span></td><td class="c ind"><span class="raw">3.0→1.8</span><span class="d down">▼-1.2</span></td><td class="c ind"><span class="raw">59.2%→62.1%</span><span class="d up">▲2.9</span></td><td class="c ind"><span class="raw">27.1%→30.2%</span><span class="d up">▲3.1</span></td><td class="c ind"><span class="raw">47.2%→48.3%</span><span class="d up">▲1.1</span></td>
+        </tr>
+        <tr>
+          <td class="c">40</td>
+          <td class="mkt">泰山城区  </td>
+          <td class="c">济南/青岛分</td>
+          <td class="c">泰安营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">83.9%→73.0%</span><span class="d down">▼-10.9</span></td><td class="c ind"><span class="raw">33.3%→40.9%</span><span class="d up">▲7.6</span></td><td class="c ind"><span class="raw">27.3%→28.0%</span><span class="d up">▲0.7</span></td><td class="c ind"><span class="raw">4.65→4.04</span><span class="d down">▼-0.61</span></td><td class="c ind"><span class="raw">4.0→1.89</span><span class="d down">▼-2.11</span></td><td class="c ind"><span class="raw">3.17→2.14</span><span class="d down">▼-1.03</span></td><td class="c ind"><span class="raw">64.2%→60.0%</span><span class="d down">▼-4.2</span></td><td class="c ind"><span class="raw">55.0%→52.2%</span><span class="d down">▼-2.8</span></td><td class="c ind"><span class="raw">33.3%→49.3%</span><span class="d up">▲16.0</span></td>
+        </tr>
+        <tr>
+          <td class="c">41</td>
+          <td class="mkt">泰州市海陵区城区  </td>
+          <td class="c">南京分</td>
+          <td class="c">泰州营业所</td>
+          <td class="c">202603→202605</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">57.7%→53.1%</span><span class="d down">▼-4.6</span></td><td class="c ind"><span class="raw">55.6%→61.5%</span><span class="d up">▲6.0</span></td><td class="c ind"><span class="raw">8.89→6.95</span><span class="d down">▼-1.94</span></td><td class="c ind"><span class="raw">2.53→2.0</span><span class="d down">▼-0.53</span></td><td class="c ind"><span class="raw">1.8→1.5</span><span class="d down">▼-0.3</span></td><td class="c ind"><span class="raw">64.9%→57.5%</span><span class="d down">▼-7.4</span></td><td class="c ind"><span class="raw">28.7%→17.2%</span><span class="d down">▼-11.4</span></td><td class="c ind"><span class="raw">49.0%→54.3%</span><span class="d up">▲5.3</span></td>
+        </tr>
+        <tr>
+          <td class="c">42</td>
+          <td class="mkt">防城港城区  </td>
+          <td class="c">南宁分</td>
+          <td class="c">北部湾营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">66.7%→84.0%</span><span class="d up">▲17.3</span></td><td class="c ind"><span class="raw">47.1%→30.8%</span><span class="d down">▼-16.3</span></td><td class="c ind"><span class="raw">16.91→11.54</span><span class="d down">▼-5.37</span></td><td class="c ind"><span class="raw">5.47→3.76</span><span class="d down">▼-1.71</span></td><td class="c ind"><span class="raw">3.13→2.25</span><span class="d down">▼-0.88</span></td><td class="c ind"><span class="raw">71.3%→70.9%</span><span class="d down">▼-0.4</span></td><td class="c ind"><span class="raw">27.8%→25.6%</span><span class="d down">▼-2.3</span></td><td class="c ind"><span class="raw">53.3%→61.9%</span><span class="d up">▲8.6</span></td>
+        </tr>
+        <tr>
+          <td class="c">43</td>
+          <td class="mkt">武汉东西湖县级  </td>
+          <td class="c">武汉分</td>
+          <td class="c">汉口营业所</td>
+          <td class="c">202604→202606</td>
+          <td class="c"><span class="score s0">2/9</span></td>
+          <td class="c"><b>2</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">96.9%→97.6%</span><span class="d up">▲0.7</span></td><td class="c ind"><span class="raw">41.7%→40.0%</span><span class="d down">▼-1.7</span></td><td class="c ind"><span class="raw">37.5%→38.5%</span><span class="d up">▲1.0</span></td><td class="c ind"><span class="raw">9.39→7.7</span><span class="d down">▼-1.69</span></td><td class="c ind"><span class="raw">4.9→4.71</span><span class="d down">▼-0.19</span></td><td class="c ind"><span class="raw">2.67→2.2</span><span class="d down">▼-0.47</span></td><td class="c ind"><span class="raw">82.9%→53.3%</span><span class="d down">▼-29.6</span></td><td class="c ind"><span class="raw">40.4%→34.7%</span><span class="d down">▼-5.7</span></td><td class="c ind"><span class="raw">61.8%→31.4%</span><span class="d down">▼-30.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">44</td>
+          <td class="mkt">阳西县  </td>
+          <td class="c">广州分</td>
+          <td class="c">阳江营业所</td>
+          <td class="c">202601→202605</td>
+          <td class="c"><span class="score s7">7/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">3/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">28.0%→28.0%</span><span class="d flat">—0</span></td><td class="c ind"><span class="raw">77.8%→53.8%</span><span class="d down">▼-23.9</span></td><td class="c ind"><span class="raw">8.43→8.75</span><span class="d up">▲0.32</span></td><td class="c ind"><span class="raw">5.43→7.43</span><span class="d up">▲2.0</span></td><td class="c ind"><span class="raw">4.43→5.0</span><span class="d up">▲0.57</span></td><td class="c ind"><span class="raw">41.0%→54.2%</span><span class="d up">▲13.2</span></td><td class="c ind"><span class="raw">25.9%→28.9%</span><span class="d up">▲3.1</span></td><td class="c ind"><span class="raw">43.9%→60.3%</span><span class="d up">▲16.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">45</td>
+          <td class="mkt">合肥包河区城区  </td>
+          <td class="c">安徽分</td>
+          <td class="c">合肥营业所</td>
+          <td class="c">202603→202604</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">95.1%→100.0%</span><span class="d up">▲4.9</span></td><td class="c ind"><span class="raw">48.6%→36.1%</span><span class="d down">▼-12.5</span></td><td class="c ind"><span class="raw">68.4%→55.9%</span><span class="d down">▼-12.5</span></td><td class="c ind"><span class="raw">13.62→14.3</span><span class="d up">▲0.68</span></td><td class="c ind"><span class="raw">4.17→5.15</span><span class="d up">▲0.98</span></td><td class="c ind"><span class="raw">3.42→4.11</span><span class="d up">▲0.69</span></td><td class="c ind"><span class="raw">61.0%→63.0%</span><span class="d up">▲2.1</span></td><td class="c ind"><span class="raw">35.9%→40.5%</span><span class="d up">▲4.6</span></td><td class="c ind"><span class="raw">38.2%→37.4%</span><span class="d down">▼-0.8</span></td>
+        </tr>
+        <tr>
+          <td class="c">46</td>
+          <td class="mkt">岳阳楼区  </td>
+          <td class="c">长沙分</td>
+          <td class="c">岳阳营业所</td>
+          <td class="c">202603→202604</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">77.5%→91.7%</span><span class="d up">▲14.2</span></td><td class="c ind"><span class="raw">32.5%→28.1%</span><span class="d down">▼-4.4</span></td><td class="c ind"><span class="raw">22.5%→16.7%</span><span class="d down">▼-5.8</span></td><td class="c ind"><span class="raw">6.16→6.29</span><span class="d up">▲0.13</span></td><td class="c ind"><span class="raw">5.62→9.67</span><span class="d up">▲4.05</span></td><td class="c ind"><span class="raw">2.22→2.8</span><span class="d up">▲0.58</span></td><td class="c ind"><span class="raw">37.9%→34.2%</span><span class="d down">▼-3.7</span></td><td class="c ind"><span class="raw">28.5%→31.9%</span><span class="d up">▲3.4</span></td><td class="c ind"><span class="raw">31.2%→46.0%</span><span class="d up">▲14.8</span></td>
+        </tr>
+        <tr>
+          <td class="c">47</td>
+          <td class="mkt">乐清县级  </td>
+          <td class="c">浙江分</td>
+          <td class="c">乐清营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">34.4%→22.2%</span><span class="d down">▼-12.2</span></td><td class="c ind"><span class="raw">90.0%→37.5%</span><span class="d down">▼-52.5</span></td><td class="c ind"><span class="raw">12.93→15.53</span><span class="d up">▲2.6</span></td><td class="c ind"><span class="raw">6.0→6.17</span><span class="d up">▲0.17</span></td><td class="c ind"><span class="raw">3.0→13.33</span><span class="d up">▲10.33</span></td><td class="c ind"><span class="raw">51.1%→50.8%</span><span class="d down">▼-0.3</span></td><td class="c ind"><span class="raw">51.8%→24.2%</span><span class="d down">▼-27.6</span></td><td class="c ind"><span class="raw">46.8%→48.1%</span><span class="d up">▲1.3</span></td>
+        </tr>
+        <tr>
+          <td class="c">48</td>
+          <td class="mkt">于洪区 <span class="badge b-nonsink">非下沉市场</span> </td>
+          <td class="c">沈阳分</td>
+          <td class="c">沈阳营业所</td>
+          <td class="c">202601→202603</td>
+          <td class="c"><span class="score s4">4/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→95.1%</span><span class="d down">▼-4.9</span></td><td class="c ind"><span class="raw">15.2%→18.2%</span><span class="d up">▲3.0</span></td><td class="c ind"><span class="raw">42.9%→37.1%</span><span class="d down">▼-5.7</span></td><td class="c ind"><span class="raw">6.4→9.21</span><span class="d up">▲2.81</span></td><td class="c ind"><span class="raw">1.2→2.33</span><span class="d up">▲1.13</span></td><td class="c ind"><span class="raw">1.33→2.15</span><span class="d up">▲0.82</span></td><td class="c ind"><span class="raw">66.1%→60.4%</span><span class="d down">▼-5.7</span></td><td class="c ind"><span class="raw">50.6%→13.7%</span><span class="d down">▼-36.9</span></td><td class="c ind"><span class="raw">28.9%→10.6%</span><span class="d down">▼-18.3</span></td>
+        </tr>
+        <tr>
+          <td class="c">49</td>
+          <td class="mkt">泰州市姜堰区城区  </td>
+          <td class="c">南京分</td>
+          <td class="c">泰州营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">4/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">87.5%→92.1%</span><span class="d up">▲4.6</span></td><td class="c ind"><span class="raw">52.4%→42.9%</span><span class="d down">▼-9.5</span></td><td class="c ind"><span class="raw">75.0%→45.8%</span><span class="d down">▼-29.2</span></td><td class="c ind"><span class="raw">10.24→12.74</span><span class="d up">▲2.5</span></td><td class="c ind"><span class="raw">3.55→5.73</span><span class="d up">▲2.18</span></td><td class="c ind"><span class="raw">4.22→6.36</span><span class="d up">▲2.14</span></td><td class="c ind"><span class="raw">46.8%→41.3%</span><span class="d down">▼-5.5</span></td><td class="c ind"><span class="raw">39.6%→24.5%</span><span class="d down">▼-15.2</span></td><td class="c ind"><span class="raw">39.3%→33.2%</span><span class="d down">▼-6.1</span></td>
+        </tr>
+        <tr>
+          <td class="c">50</td>
+          <td class="mkt">青白江  </td>
+          <td class="c">成都分</td>
+          <td class="c">德阳营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">4/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→97.5%</span><span class="d down">▼-2.5</span></td><td class="c ind"><span class="raw">53.7%→54.1%</span><span class="d up">▲0.4</span></td><td class="c ind"><span class="raw">65.7%→65.6%</span><span class="d down">▼-0.1</span></td><td class="c ind"><span class="raw">10.54→15.77</span><span class="d up">▲5.23</span></td><td class="c ind"><span class="raw">3.45→4.35</span><span class="d up">▲0.9</span></td><td class="c ind"><span class="raw">3.17→3.19</span><span class="d up">▲0.02</span></td><td class="c ind"><span class="raw">70.7%→61.5%</span><span class="d down">▼-9.2</span></td><td class="c ind"><span class="raw">30.4%→16.8%</span><span class="d down">▼-13.6</span></td><td class="c ind"><span class="raw">55.2%→30.4%</span><span class="d down">▼-24.8</span></td>
+        </tr>
+        <tr>
+          <td class="c">51</td>
+          <td class="mkt">潮安区  </td>
+          <td class="c">厦门分</td>
+          <td class="c">潮州营业所</td>
+          <td class="c">202601→202605</td>
+          <td class="c"><span class="score s4">6/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">3/3</td>
+          <td class="c ind"><span class="raw">97.7%→97.6%</span><span class="d down">▼-0.1</span></td><td class="c ind"><span class="raw">40.0%→24.3%</span><span class="d down">▼-15.7</span></td><td class="c ind"><span class="raw">60.0%→68.2%</span><span class="d up">▲8.2</span></td><td class="c ind"><span class="raw">9.79→11.07</span><span class="d up">▲1.28</span></td><td class="c ind"><span class="raw">11.92→11.56</span><span class="d down">▼-0.36</span></td><td class="c ind"><span class="raw">6.17→6.87</span><span class="d up">▲0.7</span></td><td class="c ind"><span class="raw">34.5%→39.3%</span><span class="d up">▲4.8</span></td><td class="c ind"><span class="raw">37.5%→65.6%</span><span class="d up">▲28.1</span></td><td class="c ind"><span class="raw">38.8%→53.6%</span><span class="d up">▲14.8</span></td>
+        </tr>
+        <tr>
+          <td class="c">52</td>
+          <td class="mkt">兖州市  </td>
+          <td class="c">徐州分</td>
+          <td class="c">济宁营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">94.9%→100.0%</span><span class="d up">▲5.1</span></td><td class="c ind"><span class="raw">52.9%→41.7%</span><span class="d down">▼-11.3</span></td><td class="c ind"><span class="raw">57.1%→50.0%</span><span class="d down">▼-7.1</span></td><td class="c ind"><span class="raw">10.3→8.52</span><span class="d down">▼-1.78</span></td><td class="c ind"><span class="raw">1.61→2.2</span><span class="d up">▲0.59</span></td><td class="c ind"><span class="raw">1.65→2.56</span><span class="d up">▲0.91</span></td><td class="c ind"><span class="raw">56.2%→39.6%</span><span class="d down">▼-16.6</span></td><td class="c ind"><span class="raw">33.1%→37.9%</span><span class="d up">▲4.9</span></td><td class="c ind"><span class="raw">23.3%→23.6%</span><span class="d up">▲0.3</span></td>
+        </tr>
+        <tr>
+          <td class="c">53</td>
+          <td class="mkt">周口市川汇区市区  </td>
+          <td class="c">周口分</td>
+          <td class="c">周口营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">97.9%→97.6%</span><span class="d down">▼-0.3</span></td><td class="c ind"><span class="raw">81.0%→79.5%</span><span class="d down">▼-1.5</span></td><td class="c ind"><span class="raw">68.3%→72.5%</span><span class="d up">▲4.2</span></td><td class="c ind"><span class="raw">11.07→12.44</span><span class="d up">▲1.37</span></td><td class="c ind"><span class="raw">4.15→3.87</span><span class="d down">▼-0.28</span></td><td class="c ind"><span class="raw">3.61→4.17</span><span class="d up">▲0.56</span></td><td class="c ind"><span class="raw">77.3%→74.7%</span><span class="d down">▼-2.6</span></td><td class="c ind"><span class="raw">55.3%→55.6%</span><span class="d up">▲0.3</span></td><td class="c ind"><span class="raw">54.0%→57.4%</span><span class="d up">▲3.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">54</td>
+          <td class="mkt">二七区城区  </td>
+          <td class="c">郑州分</td>
+          <td class="c">郑州市区营业所</td>
+          <td class="c">202602→202603</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">95.4%→100.0%</span><span class="d up">▲4.5</span></td><td class="c ind"><span class="raw">32.1%→18.2%</span><span class="d down">▼-14.0</span></td><td class="c ind"><span class="raw">35.1%→31.0%</span><span class="d down">▼-4.1</span></td><td class="c ind"><span class="raw">9.03→8.86</span><span class="d down">▼-0.17</span></td><td class="c ind"><span class="raw">2.22→3.5</span><span class="d up">▲1.28</span></td><td class="c ind"><span class="raw">2.1→2.44</span><span class="d up">▲0.34</span></td><td class="c ind"><span class="raw">64.5%→61.7%</span><span class="d down">▼-2.8</span></td><td class="c ind"><span class="raw">32.3%→18.5%</span><span class="d down">▼-13.8</span></td><td class="c ind"><span class="raw">37.0%→29.7%</span><span class="d down">▼-7.3</span></td>
+        </tr>
+        <tr>
+          <td class="c">55</td>
+          <td class="mkt">塘沽区  </td>
+          <td class="c">天津分</td>
+          <td class="c">天津滨海营业所</td>
+          <td class="c">202601→202603</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">94.3%→97.9%</span><span class="d up">▲3.6</span></td><td class="c ind"><span class="raw">50.9%→41.7%</span><span class="d down">▼-9.3</span></td><td class="c ind"><span class="raw">41.5%→41.3%</span><span class="d down">▼-0.2</span></td><td class="c ind"><span class="raw">10.54→9.91</span><span class="d down">▼-0.63</span></td><td class="c ind"><span class="raw">2.81→3.05</span><span class="d up">▲0.24</span></td><td class="c ind"><span class="raw">2.77→2.79</span><span class="d up">▲0.02</span></td><td class="c ind"><span class="raw">64.8%→60.9%</span><span class="d down">▼-3.9</span></td><td class="c ind"><span class="raw">42.0%→38.2%</span><span class="d down">▼-3.8</span></td><td class="c ind"><span class="raw">37.9%→36.5%</span><span class="d down">▼-1.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">56</td>
+          <td class="mkt">射阳县  </td>
+          <td class="c">徐州分</td>
+          <td class="c">盐城二所</td>
+          <td class="c">202602→202606</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">53.3%→42.9%</span><span class="d down">▼-10.5</span></td><td class="c ind"><span class="raw">72.0%→47.4%</span><span class="d down">▼-24.6</span></td><td class="c ind"><span class="raw">8.18→7.75</span><span class="d down">▼-0.43</span></td><td class="c ind"><span class="raw">4.06→6.44</span><span class="d up">▲2.38</span></td><td class="c ind"><span class="raw">2.5→3.22</span><span class="d up">▲0.72</span></td><td class="c ind"><span class="raw">80.2%→57.4%</span><span class="d down">▼-22.8</span></td><td class="c ind"><span class="raw">33.1%→29.7%</span><span class="d down">▼-3.4</span></td><td class="c ind"><span class="raw">45.2%→32.7%</span><span class="d down">▼-12.5</span></td>
+        </tr>
+        <tr>
+          <td class="c">57</td>
+          <td class="mkt">佳木斯  </td>
+          <td class="c">哈尔滨分</td>
+          <td class="c">佳木斯营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">64.1%→77.1%</span><span class="d up">▲13.0</span></td><td class="c ind"><span class="raw">45.2%→44.1%</span><span class="d down">▼-1.0</span></td><td class="c ind"><span class="raw">48.5%→36.4%</span><span class="d down">▼-12.1</span></td><td class="c ind"><span class="raw">6.6→6.41</span><span class="d down">▼-0.19</span></td><td class="c ind"><span class="raw">2.86→2.27</span><span class="d down">▼-0.59</span></td><td class="c ind"><span class="raw">3.31→4.67</span><span class="d up">▲1.36</span></td><td class="c ind"><span class="raw">34.2%→32.9%</span><span class="d down">▼-1.3</span></td><td class="c ind"><span class="raw">28.2%→24.6%</span><span class="d down">▼-3.6</span></td><td class="c ind"><span class="raw">30.3%→36.9%</span><span class="d up">▲6.6</span></td>
+        </tr>
+        <tr>
+          <td class="c">58</td>
+          <td class="mkt">蔚县  </td>
+          <td class="c">秦皇岛分</td>
+          <td class="c">张家口营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s0">2/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">95.0%→97.4%</span><span class="d up">▲2.4</span></td><td class="c ind"><span class="raw">48.5%→20.8%</span><span class="d down">▼-27.6</span></td><td class="c ind"><span class="raw">41.9%→13.0%</span><span class="d down">▼-28.9</span></td><td class="c ind"><span class="raw">5.76→4.0</span><span class="d down">▼-1.76</span></td><td class="c ind"><span class="raw">2.06→1.2</span><span class="d down">▼-0.86</span></td><td class="c ind"><span class="raw">1.31→1.33</span><span class="d up">▲0.02</span></td><td class="c ind"><span class="raw">55.5%→47.0%</span><span class="d down">▼-8.5</span></td><td class="c ind"><span class="raw">42.6%→38.0%</span><span class="d down">▼-4.6</span></td><td class="c ind"><span class="raw">42.7%→18.3%</span><span class="d down">▼-24.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">59</td>
+          <td class="mkt">港北城区  </td>
+          <td class="c">南宁分</td>
+          <td class="c">贵港营业所</td>
+          <td class="c">202602→202606</td>
+          <td class="c"><span class="score s0">2/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">100.0%→95.0%</span><span class="d down">▼-5.0</span></td><td class="c ind"><span class="raw">55.2%→45.5%</span><span class="d down">▼-9.7</span></td><td class="c ind"><span class="raw">40.0%→58.1%</span><span class="d up">▲18.1</span></td><td class="c ind"><span class="raw">17.6→16.03</span><span class="d down">▼-1.57</span></td><td class="c ind"><span class="raw">6.44→4.93</span><span class="d down">▼-1.51</span></td><td class="c ind"><span class="raw">3.5→2.83</span><span class="d down">▼-0.67</span></td><td class="c ind"><span class="raw">71.7%→77.7%</span><span class="d up">▲6.1</span></td><td class="c ind"><span class="raw">74.8%→52.8%</span><span class="d down">▼-22.0</span></td><td class="c ind"><span class="raw">50.0%→34.2%</span><span class="d down">▼-15.8</span></td>
+        </tr>
+        <tr>
+          <td class="c">60</td>
+          <td class="mkt">黄埔区  </td>
+          <td class="c">广州分</td>
+          <td class="c">广州营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s0">2/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">34.8%→15.0%</span><span class="d down">▼-19.8</span></td><td class="c ind"><span class="raw">50.0%→26.3%</span><span class="d down">▼-23.7</span></td><td class="c ind"><span class="raw">11.3→10.0</span><span class="d down">▼-1.3</span></td><td class="c ind"><span class="raw">5.75→1.33</span><span class="d down">▼-4.42</span></td><td class="c ind"><span class="raw">5.17→2.2</span><span class="d down">▼-2.97</span></td><td class="c ind"><span class="raw">59.8%→69.8%</span><span class="d up">▲9.9</span></td><td class="c ind"><span class="raw">28.7%→19.3%</span><span class="d down">▼-9.4</span></td><td class="c ind"><span class="raw">62.5%→54.6%</span><span class="d down">▼-7.9</span></td>
+        </tr>
+        <tr>
+          <td class="c">61</td>
+          <td class="mkt">南山区  </td>
+          <td class="c">深圳分</td>
+          <td class="c">深圳营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s0">1/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→100.0%</span><span class="d hold">★满分保持</span></td><td class="c ind"><span class="raw">50.0%→47.8%</span><span class="d down">▼-2.2</span></td><td class="c ind"><span class="raw">66.0%→58.7%</span><span class="d down">▼-7.3</span></td><td class="c ind"><span class="raw">24.72→22.0</span><span class="d down">▼-2.72</span></td><td class="c ind"><span class="raw">6.84→5.27</span><span class="d down">▼-1.57</span></td><td class="c ind"><span class="raw">4.58→3.78</span><span class="d down">▼-0.8</span></td><td class="c ind"><span class="raw">60.4%→56.3%</span><span class="d down">▼-4.2</span></td><td class="c ind"><span class="raw">28.8%→24.8%</span><span class="d down">▼-4.1</span></td><td class="c ind"><span class="raw">48.5%→35.5%</span><span class="d down">▼-13.0</span></td>
+        </tr>
+        <tr>
+          <td class="c">62</td>
+          <td class="mkt">吉林丰满城区  </td>
+          <td class="c">长春分</td>
+          <td class="c">吉林营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s0">1/9</span></td>
+          <td class="c"><b>1</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→89.2%</span><span class="d down">▼-10.8</span></td><td class="c ind"><span class="raw">36.1%→25.8%</span><span class="d down">▼-10.3</span></td><td class="c ind"><span class="raw">52.8%→63.6%</span><span class="d up">▲10.9</span></td><td class="c ind"><span class="raw">7.29→6.27</span><span class="d down">▼-1.02</span></td><td class="c ind"><span class="raw">2.38→1.38</span><span class="d down">▼-1.0</span></td><td class="c ind"><span class="raw">3.53→2.43</span><span class="d down">▼-1.1</span></td><td class="c ind"><span class="raw">52.2%→50.2%</span><span class="d down">▼-2.0</span></td><td class="c ind"><span class="raw">51.1%→38.1%</span><span class="d down">▼-13.0</span></td><td class="c ind"><span class="raw">41.3%→40.0%</span><span class="d down">▼-1.3</span></td>
+        </tr>
+        <tr>
+          <td class="c">63</td>
+          <td class="mkt">榆次区  <span class="badge b-bad">铺市率全降</span></td>
+          <td class="c">太原分</td>
+          <td class="c">太原营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s4">4/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">87.0%→84.8%</span><span class="d down">▼-2.2</span></td><td class="c ind"><span class="raw">76.5%→62.2%</span><span class="d down">▼-14.3</span></td><td class="c ind"><span class="raw">51.4%→44.4%</span><span class="d down">▼-7.0</span></td><td class="c ind"><span class="raw">10.4→11.56</span><span class="d up">▲1.16</span></td><td class="c ind"><span class="raw">4.92→5.74</span><span class="d up">▲0.82</span></td><td class="c ind"><span class="raw">6.28→6.5</span><span class="d up">▲0.22</span></td><td class="c ind"><span class="raw">38.7%→49.5%</span><span class="d up">▲10.8</span></td><td class="c ind"><span class="raw">27.1%→23.1%</span><span class="d down">▼-4.0</span></td><td class="c ind"><span class="raw">38.9%→25.2%</span><span class="d down">▼-13.7</span></td>
+        </tr>
+        <tr>
+          <td class="c">64</td>
+          <td class="mkt">沈北新区  <span class="badge b-bad">铺市率全降</span></td>
+          <td class="c">沈阳分</td>
+          <td class="c">沈阳营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s4">4/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">100.0%→94.6%</span><span class="d down">▼-5.4</span></td><td class="c ind"><span class="raw">33.3%→31.2%</span><span class="d down">▼-2.1</span></td><td class="c ind"><span class="raw">56.2%→48.4%</span><span class="d down">▼-7.9</span></td><td class="c ind"><span class="raw">8.95→10.54</span><span class="d up">▲1.59</span></td><td class="c ind"><span class="raw">3.3→3.4</span><span class="d up">▲0.1</span></td><td class="c ind"><span class="raw">3.67→4.73</span><span class="d up">▲1.06</span></td><td class="c ind"><span class="raw">76.1%→68.5%</span><span class="d down">▼-7.6</span></td><td class="c ind"><span class="raw">24.0%→27.2%</span><span class="d up">▲3.2</span></td><td class="c ind"><span class="raw">35.6%→29.1%</span><span class="d down">▼-6.5</span></td>
+        </tr>
+        <tr>
+          <td class="c">65</td>
+          <td class="mkt">鲅鱼圈区  <span class="badge b-bad">铺市率全降</span></td>
+          <td class="c">沈阳分</td>
+          <td class="c">营口营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">3/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→97.8%</span><span class="d down">▼-2.2</span></td><td class="c ind"><span class="raw">46.0%→43.2%</span><span class="d down">▼-2.8</span></td><td class="c ind"><span class="raw">43.2%→43.2%</span><span class="d down">▼-0.1</span></td><td class="c ind"><span class="raw">6.84→8.22</span><span class="d up">▲1.38</span></td><td class="c ind"><span class="raw">2.59→3.68</span><span class="d up">▲1.09</span></td><td class="c ind"><span class="raw">3.44→19.95</span><span class="d up">▲16.51</span></td><td class="c ind"><span class="raw">60.5%→38.1%</span><span class="d down">▼-22.5</span></td><td class="c ind"><span class="raw">42.9%→26.5%</span><span class="d down">▼-16.5</span></td><td class="c ind"><span class="raw">43.2%→31.8%</span><span class="d down">▼-11.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">66</td>
+          <td class="mkt">即墨县级 <span class="badge b-sinkonly">非今年计划</span> <span class="badge b-bad">铺市率全降</span></td>
+          <td class="c">济南/青岛分</td>
+          <td class="c">青岛营业所</td>
+          <td class="c">202601→202603</td>
+          <td class="c"><span class="score s4">5/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">3/3</td>
+          <td class="c ind"><span class="raw">91.9%→86.7%</span><span class="d down">▼-5.2</span></td><td class="c ind"><span class="raw">36.1%→28.6%</span><span class="d down">▼-7.5</span></td><td class="c ind"><span class="raw">43.6%→32.4%</span><span class="d down">▼-11.2</span></td><td class="c ind"><span class="raw">18.65→11.08</span><span class="d down">▼-7.57</span></td><td class="c ind"><span class="raw">3.92→4.7</span><span class="d up">▲0.78</span></td><td class="c ind"><span class="raw">4.47→6.82</span><span class="d up">▲2.35</span></td><td class="c ind"><span class="raw">52.0%→60.0%</span><span class="d up">▲8.0</span></td><td class="c ind"><span class="raw">23.5%→29.7%</span><span class="d up">▲6.2</span></td><td class="c ind"><span class="raw">22.2%→40.2%</span><span class="d up">▲17.9</span></td>
+        </tr>
+        <tr>
+          <td class="c">67</td>
+          <td class="mkt">无锡市江阴市县级 <span class="badge b-nonsink">非下沉市场</span> <span class="badge b-bad">铺市率全降</span></td>
+          <td class="c">南京分</td>
+          <td class="c">无锡营业所</td>
+          <td class="c">202601→202603</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">97.1%→94.1%</span><span class="d down">▼-3.0</span></td><td class="c ind"><span class="raw">40.7%→25.9%</span><span class="d down">▼-14.8</span></td><td class="c ind"><span class="raw">45.4%→31.6%</span><span class="d down">▼-13.9</span></td><td class="c ind"><span class="raw">12.91→8.06</span><span class="d down">▼-4.85</span></td><td class="c ind"><span class="raw">5.27→5.57</span><span class="d up">▲0.3</span></td><td class="c ind"><span class="raw">4.2→4.83</span><span class="d up">▲0.63</span></td><td class="c ind"><span class="raw">60.5%→68.8%</span><span class="d up">▲8.3</span></td><td class="c ind"><span class="raw">30.4%→23.0%</span><span class="d down">▼-7.4</span></td><td class="c ind"><span class="raw">30.4%→29.2%</span><span class="d down">▼-1.2</span></td>
+        </tr>
+        <tr>
+          <td class="c">68</td>
+          <td class="mkt">广汉  <span class="badge b-bad">铺市率全降</span></td>
+          <td class="c">成都分</td>
+          <td class="c">德阳营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s0">2/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">2/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">98.2%→97.4%</span><span class="d down">▼-0.7</span></td><td class="c ind"><span class="raw">69.1%→55.3%</span><span class="d down">▼-13.8</span></td><td class="c ind"><span class="raw">53.7%→34.3%</span><span class="d down">▼-19.4</span></td><td class="c ind"><span class="raw">12.43→11.26</span><span class="d down">▼-1.17</span></td><td class="c ind"><span class="raw">4.03→4.1</span><span class="d up">▲0.07</span></td><td class="c ind"><span class="raw">2.86→3.0</span><span class="d up">▲0.14</span></td><td class="c ind"><span class="raw">79.6%→76.9%</span><span class="d down">▼-2.7</span></td><td class="c ind"><span class="raw">42.0%→33.6%</span><span class="d down">▼-8.4</span></td><td class="c ind"><span class="raw">55.0%→33.6%</span><span class="d down">▼-21.4</span></td>
+        </tr>
+        <tr>
+          <td class="c">69</td>
+          <td class="mkt">水乡县级  <span class="badge b-bad">铺市率全降</span></td>
+          <td class="c">广州分</td>
+          <td class="c">东莞营业所</td>
+          <td class="c">202601→202603</td>
+          <td class="c"><span class="score s0">3/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">2/3</td>
+          <td class="c ind"><span class="raw">100.0%→94.3%</span><span class="d down">▼-5.7</span></td><td class="c ind"><span class="raw">32.5%→14.3%</span><span class="d down">▼-18.2</span></td><td class="c ind"><span class="raw">32.5%→17.1%</span><span class="d down">▼-15.4</span></td><td class="c ind"><span class="raw">16.65→12.7</span><span class="d down">▼-3.95</span></td><td class="c ind"><span class="raw">6.62→8.6</span><span class="d up">▲1.98</span></td><td class="c ind"><span class="raw">4.38→4.17</span><span class="d down">▼-0.21</span></td><td class="c ind"><span class="raw">33.4%→48.3%</span><span class="d up">▲14.8</span></td><td class="c ind"><span class="raw">30.5%→21.0%</span><span class="d down">▼-9.5</span></td><td class="c ind"><span class="raw">33.2%→40.8%</span><span class="d up">▲7.6</span></td>
+        </tr>
+        <tr>
+          <td class="c">70</td>
+          <td class="mkt">秦都区  <span class="badge b-bad">铺市率全降</span></td>
+          <td class="c">西安分</td>
+          <td class="c">咸阳营业所</td>
+          <td class="c">202602→202604</td>
+          <td class="c"><span class="score s0">2/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">96.7%→89.7%</span><span class="d down">▼-6.9</span></td><td class="c ind"><span class="raw">69.0%→65.8%</span><span class="d down">▼-3.2</span></td><td class="c ind"><span class="raw">51.8%→42.9%</span><span class="d down">▼-9.0</span></td><td class="c ind"><span class="raw">9.95→9.6</span><span class="d down">▼-0.35</span></td><td class="c ind"><span class="raw">4.2→3.96</span><span class="d down">▼-0.24</span></td><td class="c ind"><span class="raw">3.32→3.93</span><span class="d up">▲0.61</span></td><td class="c ind"><span class="raw">63.0%→68.7%</span><span class="d up">▲5.6</span></td><td class="c ind"><span class="raw">49.0%→47.0%</span><span class="d down">▼-2.0</span></td><td class="c ind"><span class="raw">40.2%→37.0%</span><span class="d down">▼-3.2</span></td>
+        </tr>
+        <tr>
+          <td class="c">71</td>
+          <td class="mkt">开原县级  <span class="badge b-bad">铺市率全降</span></td>
+          <td class="c">沈阳分</td>
+          <td class="c">铁岭营业所</td>
+          <td class="c">202601→202606</td>
+          <td class="c"><span class="score s0">1/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">1/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→90.0%</span><span class="d down">▼-10.0</span></td><td class="c ind"><span class="raw">26.2%→25.7%</span><span class="d down">▼-0.5</span></td><td class="c ind"><span class="raw">32.5%→26.5%</span><span class="d down">▼-6.0</span></td><td class="c ind"><span class="raw">3.74→3.75</span><span class="d up">▲0.01</span></td><td class="c ind"><span class="raw">2.27→2.0</span><span class="d down">▼-0.27</span></td><td class="c ind"><span class="raw">2.15→2.0</span><span class="d down">▼-0.15</span></td><td class="c ind"><span class="raw">37.0%→30.6%</span><span class="d down">▼-6.3</span></td><td class="c ind"><span class="raw">23.6%→23.4%</span><span class="d down">▼-0.3</span></td><td class="c ind"><span class="raw">26.2%→24.4%</span><span class="d down">▼-1.8</span></td>
+        </tr>
+        <tr>
+          <td class="c">72</td>
+          <td class="mkt">荆州城区2  <span class="badge b-bad">铺市率全降</span></td>
+          <td class="c">武汉分</td>
+          <td class="c">荆州营业所</td>
+          <td class="c">202601→202604</td>
+          <td class="c"><span class="score s0">1/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">1/3</td>
+          <td class="c ind"><span class="raw">90.0%→82.5%</span><span class="d down">▼-7.5</span></td><td class="c ind"><span class="raw">55.9%→46.7%</span><span class="d down">▼-9.2</span></td><td class="c ind"><span class="raw">54.6%→54.2%</span><span class="d down">▼-0.4</span></td><td class="c ind"><span class="raw">10.36→9.7</span><span class="d down">▼-0.66</span></td><td class="c ind"><span class="raw">2.74→2.57</span><span class="d down">▼-0.17</span></td><td class="c ind"><span class="raw">2.08→1.54</span><span class="d down">▼-0.54</span></td><td class="c ind"><span class="raw">54.6%→59.5%</span><span class="d up">▲4.9</span></td><td class="c ind"><span class="raw">29.0%→25.6%</span><span class="d down">▼-3.4</span></td><td class="c ind"><span class="raw">47.5%→45.4%</span><span class="d down">▼-2.1</span></td>
+        </tr>
+        <tr>
+          <td class="c">73</td>
+          <td class="mkt">昌吉城区  </td>
+          <td class="c">乌鲁木齐分</td>
+          <td class="c">昌吉营业所</td>
+          <td class="c">202601→202605</td>
+          <td class="c"><span class="score s0">0/9</span></td>
+          <td class="c"><b>0</b>/3</td>
+          <td class="c">0/3</td>
+          <td class="c">0/3</td>
+          <td class="c ind"><span class="raw">100.0%→97.6%</span><span class="d down">▼-2.4</span></td><td class="c ind"><span class="raw">95.6%→85.4%</span><span class="d down">▼-10.2</span></td><td class="c ind"><span class="raw">0.0%→0.0%</span><span class="d flat">—0</span></td><td class="c ind"><span class="raw">9.22→8.15</span><span class="d down">▼-1.07</span></td><td class="c ind"><span class="raw">6.65→6.26</span><span class="d down">▼-0.39</span></td><td class="c ind"><span class="raw">0.0→0.0</span><span class="d flat">—0</span></td><td class="c ind"><span class="raw">77.7%→65.5%</span><span class="d down">▼-12.1</span></td><td class="c ind"><span class="raw">76.5%→65.2%</span><span class="d down">▼-11.3</span></td><td class="c ind"><span class="raw">0.0%→0.0%</span><span class="d flat">—0</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="foot">说明：指标单元格灰字为「首次→末次」原始值（铺市率/陈列占比带%），右侧彩色徽章为变化量（铺市率/陈列占比为百分点，SKU为个数）；▲绿=上升 ▼红=下降 —黄=持平 ★金=维持100%满分（视为上升，计入上升数）。<b>规划属性打标：</b>市场名旁 <span style="color:#C0392B">「非下沉市场」</span>=非工厂周边渠道下沉市场；<span style="color:#6B7280">「非今年计划」</span>=属下沉市场但未纳入2026年目标检查计划；无标记=目标检查市场。完整明细及汇总见 Excel。挂面因无陈列占比指标未纳入本次9项对比。</div>
+  </div>
+</div>
+</body>
+</html>
