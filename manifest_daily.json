@@ -1,0 +1,62 @@
+{
+  "id": "/dashboard/daily",
+  "name": "工厂督察",
+  "short_name": "工厂督察",
+  "description": "工厂督察工作入口：月度计划、区域提报、每日达成日报",
+  "start_url": "/dashboard/daily.html",
+  "scope": "/dashboard/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e2a52",
+  "theme_color": "#16335f",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/dashboard/icon_daily-192.png?v=10",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/dashboard/icon_daily-512.png?v=10",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/dashboard/icon_daily-512.png?v=10",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "每日达成日报",
+      "short_name": "达成日报",
+      "description": "工厂督查每日检查进度、达成率",
+      "url": "/dashboard/daily_report.html",
+      "icons": [
+        { "src": "/dashboard/icon_daily-192.png?v=10", "sizes": "192x192" }
+      ]
+    },
+    {
+      "name": "月度工作计划（系统设定）",
+      "short_name": "月度计划",
+      "description": "本月检查排班：督察×标准市场×4周轮换线路",
+      "url": "/dashboard/monthly_plan.html",
+      "icons": [
+        { "src": "/dashboard/icon_plan-192.png", "sizes": "192x192" }
+      ]
+    },
+    {
+      "name": "月度工作计划（区域提报）",
+      "short_name": "区域提报",
+      "description": "各区域战队提报的月度检查安排",
+      "url": "/dashboard/region_plan.html",
+      "icons": [
+        { "src": "/dashboard/icon_plan-192.png", "sizes": "192x192" }
+      ]
+    }
+  ]
+}

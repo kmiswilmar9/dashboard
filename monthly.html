@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>工厂周边市场表现 · 月度汇总看板</title>
+<link rel="manifest" href="/dashboard/manifest_cockpit.json">
+<link rel="apple-touch-icon" sizes="180x180" href="/dashboard/icon-180.png?v=10">
+<link rel="icon" type="image/png" sizes="192x192" href="/dashboard/icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/dashboard/favicon-32.png">
+<meta name="theme-color" content="#1a3a6b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="市场数据洞察中心">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -53,6 +63,7 @@
   .foot { text-align:center; color:#8a94a8; font-size:12px; margin-top:8px; }
   @media (max-width:1000px){ .kpis{grid-template-columns:repeat(2,1fr);} .row.c2,.row.c21{grid-template-columns:1fr;} }
 </style>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/dashboard/sw.js');}</script>
 </head>
 <body>
 <div class="banner">
